@@ -29,7 +29,7 @@ public class NipaVisualDebuggerAcnycHelper
         solidlabels = new List<LabelData>();
         followLabels = new List<LabelDataFollowTrans>();
         gizmosToRemove = new List<string>();
-        MainSystem.Main.OnUnityUpdate.AddListener(SendRequestsToDebugger);
+        //MainSystem.Main.OnUnityUpdate.AddListener(SendRequestsToDebugger);
     }
 
     void SendRequestsToDebugger()

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace Common.Debugs
+namespace NipaFriends.GuiMenus
 {
     using ScalableGUI;
-    using MainSystem;
+
 
     public class CommonDebugMenu : SingletonMonoBehaviour<CommonDebugMenu>
     {
@@ -18,9 +18,8 @@ namespace Common.Debugs
         Rect dubugWindow = new Rect(0, 0, 600, 500);
         Vector2 guiScrollPosition;
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
             this.dubugWindow.width = Mathf.Max(400f, Screen.width * 0.25f);
             this.dubugWindow.height = Screen.height;
         }
@@ -46,7 +45,7 @@ namespace Common.Debugs
 
 
 
-        void OnGUI()
+        private void OnGUI()
         {
             if (this.showMenu == false)
             {
@@ -56,27 +55,10 @@ namespace Common.Debugs
             this.dubugWindow = GUILayout.Window(100, this.dubugWindow, this.DebugWindow, "Debug Menu", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         }
 
-        void DebugWindow(int id)
+        protected virtual void DebugWindow(int id)
         {
             this.guiScrollPosition = GUILayout.BeginScrollView(guiScrollPosition, GUILayout.MinHeight(Screen.height - 200f));
             GUILayout.BeginVertical();
-
-            using (var v = new GUILayout.VerticalScope("box"))
-            {
-                var temp = GUILayout.Toggle(this.pauseGame, "Pause Game");
-                if (temp != this.pauseGame)
-                {
-                    if (temp == false)
-                    {
-                        Main.ins.ResumeTime();
-                    }
-                    else
-                    {
-                        Main.ins.StopTime();
-                    }
-                }
-                this.pauseGame = temp;
-            }
 
             if (this.focusedContent == null)
             {

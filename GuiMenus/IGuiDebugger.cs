@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace Common.Debugs
+namespace NipaFriends.GuiMenus
 {
     public interface IGuiDebugger 
     {

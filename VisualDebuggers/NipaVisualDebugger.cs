@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Common.Debugs;
+using NipaFriends.GuiMenus;
 
 ////////////////////////////////////////////////////////////////////////////////
 ///<summary>

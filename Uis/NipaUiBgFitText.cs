@@ -34,7 +34,7 @@ namespace NipaFriends
         {
             this.contFitter.enabled = true;
             this.targetText.text = cont;
-            NipaCorountine.instance.StartProcess(this.UpdateTextLate());
+            NipaCorountine.Instance.StartProcess(this.UpdateTextLate());
         }
 
         private IEnumerator UpdateTextLate()
