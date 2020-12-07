@@ -5,13 +5,11 @@ using UnityEngine.UI;
 
 namespace NipaFriends
 {
-
-    ////////////////////////////////////////////////////////////////////////////////
     ///<summary>
     /// [ROLE] : 子のテキストの幅に合わせて自身の幅を合わせる
     /// [note] : -
     ///</summary> 
-    public class NipaUiBgFitText : MonoBehaviour
+    public class UiLabeAdjuster : MonoBehaviour
     {
         [HideInInspector]
         public Text targetText;
