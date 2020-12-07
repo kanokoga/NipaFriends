@@ -47,7 +47,7 @@ namespace NipaFriends.Guis
             {
                 return;
             }
-            GUI.skin = GuiManager.Instance.GetSkin();
+            GUI.skin = GuiUiController.Instance.GetSkin();
             this.dubugWindow = GUILayout.Window(100, this.dubugWindow, this.DebugWindow, "Debug Menu", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         }
 

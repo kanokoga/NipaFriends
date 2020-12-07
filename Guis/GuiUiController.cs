@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NipaFriends.Guis
 {
-    public class GuiManager : SingletonMonoBehaviour<GuiManager>
+    public class GuiUiController : SingletonMonoBehaviour<GuiUiController>
     {
         [SerializeField] GUISkin skin;
         float scale = 1f;
