@@ -5,18 +5,14 @@ using System.Linq;
 
 namespace NipaFriends.GuiMenus
 {
-    using ScalableGUI;
-
-
-    public class CommonDebugMenu : SingletonMonoBehaviour<CommonDebugMenu>
+    public class DebugMenu : SingletonMonoBehaviour<DebugMenu>
     {
-        [SerializeField] private KeyCode toggleMenu = KeyCode.F1;
-        private bool showMenu = false;
-        private Dictionary<string, List<IGuiDebugger>> contents = new Dictionary<string, List<IGuiDebugger>>();
-        private IGuiDebugger focusedContent = null;
-        private bool pauseGame = false;
-        Rect dubugWindow = new Rect(0, 0, 600, 500);
-        Vector2 guiScrollPosition;
+        [SerializeField] protected KeyCode toggleMenu = KeyCode.F1;
+        protected bool showMenu = false;
+        protected Dictionary<string, List<IGuiDebugger>> contents = new Dictionary<string, List<IGuiDebugger>>();
+        protected IGuiDebugger focusedContent = null;
+        protected Rect dubugWindow = new Rect(0, 0, 600, 500);
+        protected Vector2 guiScrollPosition;
 
         private void Awake()
         {
@@ -51,7 +47,7 @@ namespace NipaFriends.GuiMenus
             {
                 return;
             }
-            GUI.skin = GuiManager.instance.GetSkin();
+            GUI.skin = GuiManager.Instance.GetSkin();
             this.dubugWindow = GUILayout.Window(100, this.dubugWindow, this.DebugWindow, "Debug Menu", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         }
 

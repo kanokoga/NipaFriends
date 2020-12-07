@@ -2,22 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ScalableGUI
+namespace NipaFriends.GuiMenus
 {
-    public class GuiManager : MonoBehaviour
+    public class GuiManager : SingletonMonoBehaviour<GuiManager>
     {
-
-        public static GuiManager instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<GuiManager>();
-                return _instance;
-            }
-        }
-        static GuiManager _instance;
-
         [SerializeField] GUISkin skin;
         float scale = 1f;
         int fontDefaultSize;

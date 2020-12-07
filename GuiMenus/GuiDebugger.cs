@@ -47,7 +47,7 @@ namespace NipaFriends.GuiMenus
         protected void Register(string category, string title)
         {
             this.debugTitle = title;
-            CommonDebugMenu.Instance.AddContent(category, this);
+            DebugMenu.Instance.AddContent(category, this);
         }
 
         public virtual void Dispose()
