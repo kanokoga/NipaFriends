@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NipaFriends.GuiMenus
+namespace NipaFriends.Guis
 {
     public class GuiManager : SingletonMonoBehaviour<GuiManager>
     {
@@ -73,7 +73,7 @@ namespace NipaFriends.GuiMenus
 
         private void OnDestroy()
         {
-            _instance = null;
+            instance = null;
         }
     }
 }

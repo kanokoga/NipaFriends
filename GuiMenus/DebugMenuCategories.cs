@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NipaFriends.GuiMenus
+namespace NipaFriends.Guis
 {
     public static class DebugMenuCategories
     {

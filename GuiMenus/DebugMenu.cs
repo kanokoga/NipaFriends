@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace NipaFriends.GuiMenus
+namespace NipaFriends.Guis
 {
     public class DebugMenu : SingletonMonoBehaviour<DebugMenu>
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NipaFriends.GuiMenus.Utility
+namespace NipaFriends.Guis.Utility
 {
     public class GuiFloatTextField
     {

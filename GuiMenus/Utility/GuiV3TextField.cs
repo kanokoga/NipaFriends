@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace NipaFriends.GuiMenus.Utility
+namespace NipaFriends.Guis.Utility
 {
     public class GuiV3TextField
     {

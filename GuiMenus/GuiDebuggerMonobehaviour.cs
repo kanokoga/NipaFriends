@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace NipaFriends.GuiMenus
+namespace NipaFriends.Guis
 {
     public abstract class GuiDebuggerMonobehaviour : MonoBehaviour, IGuiDebugger
     {

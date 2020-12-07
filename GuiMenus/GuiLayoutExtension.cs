@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NipaFriends.GuiMenus
+namespace NipaFriends.Guis
 {
     public class GuiLayoutExtension : GUILayout
     {

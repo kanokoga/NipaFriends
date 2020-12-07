@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-namespace NipaFriends.GuiMenus
+namespace NipaFriends.Guis
 {
     public class MultiLineLog
     {
