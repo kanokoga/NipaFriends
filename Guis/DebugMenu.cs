@@ -11,16 +11,16 @@ namespace NipaFriends.Guis
         protected bool showMenu = false;
         protected Dictionary<string, List<IGuiDebugger>> contents = new Dictionary<string, List<IGuiDebugger>>();
         protected IGuiDebugger focusedContent = null;
-        protected Rect dubugWindow = new Rect(0, 0, 600, 500);
+        protected Rect windowRect = new Rect(0, 0, 600, 500);
         protected Vector2 guiScrollPosition;
 
-        private void Awake()
+        protected virtual void Awake()
         {
-            this.dubugWindow.width = Mathf.Max(400f, Screen.width * 0.25f);
-            this.dubugWindow.height = Screen.height;
+            this.windowRect.width = Mathf.Max(400f, Screen.width * 0.25f);
+            this.windowRect.height = Screen.height;
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (Input.GetKeyDown(this.toggleMenu))
             {
@@ -41,14 +41,14 @@ namespace NipaFriends.Guis
 
 
 
-        private void OnGUI()
+        protected virtual void OnGUI()
         {
             if (this.showMenu == false)
             {
                 return;
             }
             GUI.skin = GuiUiController.Instance.GetSkin();
-            this.dubugWindow = GUILayout.Window(100, this.dubugWindow, this.DebugWindow, "Debug Menu", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+            this.windowRect = GUILayout.Window(100, this.windowRect, this.DebugWindow, "Debug Menu", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         }
 
         protected virtual void DebugWindow(int id)
