@@ -1390,4 +1390,18 @@ namespace NipaFriends
             return delta < threshold;
         }
     }
+
+    ///<summary>
+    /// [ROLE] : 日付の細かさのレベル
+    /// [note] : -
+    ///</summary> 
+    public enum StringDateType
+    {
+        NoTime,
+        DayLevel,
+        HourLevel,
+        MinuteLevel,
+        SecondLevel
+    }
+
 }
