@@ -54,7 +54,7 @@ public class NipaVisualDebugger : GuiDebuggerMonobehaviour
 
     private void Start()
     {
-        this.Register(DebugMenuCategories.GENERAL, "Label and Gizmos");
+        //this.Register(DebugMenuCategories.GENERAL, "Label and Gizmos");
     }
 
     private void Update()
