@@ -652,6 +652,15 @@ namespace NipaFriends
         ///</summary> 
 
 
+        public static float GetVector3Dot(Vector3 origin, Vector3 a, Vector3 b)
+            => Vector3.Dot((a - origin).normalized, (b - origin).normalized);
+
+        public static bool IsBothFront(Vector3 origin, Vector3 a, Vector3 b)
+            => GetVector3Dot(origin, a, b) > 0f;
+
+        public static bool IsBetween(Vector3 origin, Vector3 a, Vector3 b)
+            => GetVector3Dot(origin, a, b) < 0f;
+
         #endregion
 
         #region *** その他 ***
@@ -854,6 +863,24 @@ namespace NipaFriends
         public static void SetCameraLayer(Camera _cam, int _layerIndex)
         {
             _cam.cullingMask = (1 << _layerIndex);
+        }
+
+        public static int GetLayerMask(int layerIndex)
+        {
+            //// Bit shift the index of the layer (8) to get a bit mask
+            //int layerMask = 1 << 8;
+
+            //// This would cast rays only against colliders in layer 8.
+            //// But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+            //layerMask = ~layerMask;
+            var result = (1 << layerIndex);
+            return result;
+        }
+
+        public static int GetLayerMaskExcept(int layerIndex)
+        {
+            var result = (1 << layerIndex);
+            return ~result;
         }
 
         ///<summary>
