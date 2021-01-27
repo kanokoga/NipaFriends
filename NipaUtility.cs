@@ -1310,6 +1310,16 @@ namespace NipaFriends
             return true;
         }
 
+        public static Vector2 GetScreenPosition(Camera camera, Vector3 position, float width = 200f, float height = 200f)
+        {
+            var viewPos = camera.WorldToViewportPoint(position);
+            var screenPos = new Vector2(
+                        Mathf.Clamp(Screen.width * viewPos.x, 0f, Screen.width - width),
+                        Mathf.Clamp(Screen.height * (1f - viewPos.y), 0f, Screen.height - height)
+                        );
+            return screenPos;
+        }
+
         #endregion
 
         #region *** Camera ***
