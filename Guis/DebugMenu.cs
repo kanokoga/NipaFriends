@@ -39,6 +39,15 @@ namespace NipaFriends.Guis
             content.OnClose += () => this.focusedContent = null;
         }
 
+        public void Open(IGuiDebugger target)
+        {
+            if (this.focusedContent != null)
+            {
+                this.focusedContent.Close();
+            }
+            target.Open();
+            this.focusedContent = target;
+        }
 
 
         protected virtual void OnGUI()

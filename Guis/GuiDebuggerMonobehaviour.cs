@@ -25,6 +25,11 @@ namespace NipaFriends.Guis
             }
         }
 
+        public void ForceOpen()
+        {
+            DebugMenu.Instance.Open(this);
+        }
+
         protected abstract void GuiContent();
 
         public void Open()

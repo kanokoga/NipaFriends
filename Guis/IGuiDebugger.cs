@@ -13,5 +13,6 @@ namespace NipaFriends.Guis
         void Open();
         void Close();
         void Dispose();
+        void ForceOpen();
     }
 }
