@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 namespace NipaFriends.Guis
 {
     public class DebugMenu : SingletonMonoBehaviour<DebugMenu>
     {
+        public bool IsMouseOvered => this.isMouseOvered;
+        public event Action OnMouseOverUpdated = delegate { };
+
         [SerializeField] protected KeyCode toggleMenu = KeyCode.F1;
         protected bool showMenu = false;
         protected Dictionary<string, List<IGuiDebugger>> contents = new Dictionary<string, List<IGuiDebugger>>();
         protected IGuiDebugger focusedContent = null;
         protected Rect windowRect = new Rect(0, 0, 600, 500);
         protected Vector2 guiScrollPosition;
+        protected bool isMouseOvered = false;
 
         protected virtual void Awake()
         {
@@ -56,13 +61,20 @@ namespace NipaFriends.Guis
             {
                 return;
             }
+            var temp = this.windowRect.Contains(Event.current.mousePosition);
+            if(temp != this.isMouseOvered)
+            {
+                this.isMouseOvered = temp;
+                this.OnMouseOverUpdated.Invoke();
+            }
+
             GUI.skin = GuiUiController.Instance.GetSkin();
             this.windowRect = GUILayout.Window(100, this.windowRect, this.DebugWindow, "Debug Menu", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         }
 
         protected virtual void DebugWindow(int id)
         {
-            this.guiScrollPosition = GUILayout.BeginScrollView(guiScrollPosition, GUILayout.MinHeight(Screen.height - 200f));
+            this.guiScrollPosition = GUILayout.BeginScrollView(guiScrollPosition, GUILayout.MinHeight(Screen.height - 100f));
             GUILayout.BeginVertical();
 
             if (this.focusedContent == null)
