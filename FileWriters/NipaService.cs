@@ -5,15 +5,6 @@ using System;
 
 namespace NipaFriends.FileWriters
 {
-    public enum TimeLevel
-    {
-        Day,
-        Hour,
-        Minute,
-        Second,
-        MiliSecond
-    }
-
     public static class NipaService
     {
 
