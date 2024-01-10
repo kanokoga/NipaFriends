@@ -82,11 +82,11 @@ namespace NipaFriends.WorldSpaces
         {
             public NodeInfo(S me, S parent, List<S> parentsOfParent)
             {
-                self = me;
-                parents = new List<S>();
-                parents.Add(parent);
+                this.self = me;
+                this.parents = new List<S>();
+                this.parents.Add(parent);
                 if (parentsOfParent != null)
-                    parents.AddRange(parentsOfParent);
+                    this.parents.AddRange(parentsOfParent);
 
             }
 

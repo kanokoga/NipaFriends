@@ -10,17 +10,17 @@ public class NipaDijkstra
 
 	public NipaDijkstra(NodeInfo[] ns)
 	{
-		nodes = new Dictionary<int, NodeInfo>();
+        this.nodes = new Dictionary<int, NodeInfo>();
 		foreach (var n in ns)
 		{
-			nodes.Add(n.nodeId, n);
+            this.nodes.Add(n.nodeId, n);
 			//Debug.Log(n.neighborIdAndCost.Count);
 		}
-		foreach (var n in nodes)
+		foreach (var n in this.nodes)
 		{
 			foreach (var nn in n.Value.neighborIdAndCost)
 			{
-				var nNode = nodes[nn.Key];
+				var nNode = this.nodes[nn.Key];
 				if (!nNode.neighborIdAndCost.ContainsKey(n.Key))
 				{
 					nNode.neighborIdAndCost.Add(n.Key, nn.Value);
@@ -28,10 +28,10 @@ public class NipaDijkstra
 			}
 		}
 
-		records = new Dictionary<int, Record>();
-		foreach (var item in nodes)
+        this.records = new Dictionary<int, Record>();
+		foreach (var item in this.nodes)
 		{
-			records.Add(item.Value.nodeId, new Record() { previousNodeId = -1, costAmount = Mathf.Infinity });
+            this.records.Add(item.Value.nodeId, new Record() { previousNodeId = -1, costAmount = Mathf.Infinity });
 		}
 	}
 
@@ -40,19 +40,19 @@ public class NipaDijkstra
 		if (start == goal)
 			return new Stack<int>();
 
-		foreach (var item in nodes)
+		foreach (var item in this.nodes)
 		{
-			var r = records[item.Key];
+			var r = this.records[item.Key];
 			r.costAmount = Mathf.Infinity;
 			r.previousNodeId = -1;
-			records[item.Key] = r;
+            this.records[item.Key] = r;
 		}
 
-		var s = records[start];
+		var s = this.records[start];
 		s.costAmount = 0f;
-		records[start] = s;
+        this.records[start] = s;
 
-		CheckRoute(nodes[start]);
+        this.CheckRoute(this.nodes[start]);
 
 		var result = new Stack<int>();
 		var id = goal;
@@ -61,7 +61,7 @@ public class NipaDijkstra
 			result.Push(id);
 			while (id != -1)
 			{
-				id = records[id].previousNodeId;
+				id = this.records[id].previousNodeId;
 				result.Push(id);
 				if (id == start)
 					break;
@@ -73,16 +73,16 @@ public class NipaDijkstra
 
 	void CheckRoute(NodeInfo checkFrom)
 	{
-		foreach (var n in nodes[checkFrom.nodeId].neighborIdAndCost)
+		foreach (var n in this.nodes[checkFrom.nodeId].neighborIdAndCost)
 		{
-			var dist = records[checkFrom.nodeId].costAmount + checkFrom.neighborIdAndCost[n.Key];
-			var r = records[n.Key];
+			var dist = this.records[checkFrom.nodeId].costAmount + checkFrom.neighborIdAndCost[n.Key];
+			var r = this.records[n.Key];
 			if (dist < r.costAmount)
 			{
 				r.previousNodeId = checkFrom.nodeId;
 				r.costAmount = dist;
-				records[n.Key] = r;
-				CheckRoute(nodes[n.Key]);
+                this.records[n.Key] = r;
+                this.CheckRoute(this.nodes[n.Key]);
 			}
 		}
 	}

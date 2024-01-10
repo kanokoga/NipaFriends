@@ -134,7 +134,7 @@ namespace NipaFriends.WorldSpaces
         {
             var validPointIndex = -1;
             var range = 1;
-            range = Mathf.CeilToInt(radius / gridSize);
+            range = Mathf.CeilToInt(radius / this.gridSize);
             if (this.GetValidPointIndexInCell(x, y, ref validPointIndex))
                 return true;
 

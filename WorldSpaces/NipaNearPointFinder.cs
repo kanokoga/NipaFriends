@@ -60,7 +60,7 @@ namespace NipaFriends.WorldSpaces
             {
                 var validCellFound = false;
 
-                var arounds = GetAroundCellIndex(targetIdex, level);
+                var arounds = this.GetAroundCellIndex(targetIdex, level);
                 foreach (var a in arounds)
                 {
                     if (this.IsValid(a))

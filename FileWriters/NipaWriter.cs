@@ -20,7 +20,7 @@ namespace NipaFriends.FileWriters
                 text += Environment.NewLine;
             }
 
-            File.AppendAllText(Path.Combine(dirPath, fileName), text);
+            File.AppendAllText(System.IO.Path.Combine(dirPath, fileName), text);
         }
 
         public static string NewLine

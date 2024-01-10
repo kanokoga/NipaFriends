@@ -74,7 +74,7 @@ namespace NipaFriends.Guis
 
         protected virtual void DebugWindow(int id)
         {
-            this.guiScrollPosition = GUILayout.BeginScrollView(guiScrollPosition, GUILayout.MinHeight(Screen.height - 100f));
+            this.guiScrollPosition = GUILayout.BeginScrollView(this.guiScrollPosition, GUILayout.MinHeight(Screen.height - 100f));
             GUILayout.BeginVertical();
 
             if (this.focusedContent == null)

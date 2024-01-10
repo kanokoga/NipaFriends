@@ -16,7 +16,7 @@ namespace NipaFriends.FileWriters
             }
             fileName += ".png";
             var bytes = texture.EncodeToPNG();
-            File.WriteAllBytes(Path.Combine(dirPath, fileName), bytes);
+            File.WriteAllBytes(System.IO.Path.Combine(dirPath, fileName), bytes);
         }
     }
 }

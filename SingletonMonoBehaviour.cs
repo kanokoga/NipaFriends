@@ -11,7 +11,7 @@ namespace NipaFriends
             {
                 if (instance == null)
                 {
-                    instance = (T)FindObjectOfType(typeof(T));
+                    instance = (T)FindFirstObjectByType(typeof(T));
 
                     if (instance == null)
                     {
@@ -29,7 +29,7 @@ namespace NipaFriends
             if (first && instance == null)
             {
                 first = false;
-                instance = (T)FindObjectOfType(typeof(T));
+                instance = (T)FindFirstObjectByType(typeof(T));
             }
             return instance;
         }
