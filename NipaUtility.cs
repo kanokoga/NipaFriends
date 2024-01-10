@@ -451,8 +451,8 @@ namespace NipaFriends
         {
             Vector2 result2 = Vector2.zero;
             float ratio;
-            var found = GetCrossPoint(a1.ToV2(), a2.ToV2(), b1.ToV2(), b2.ToV2(), out result2, out ratio);
-            result = result2.ToV3(Mathf.Lerp(a1.y, a2.y, ratio));
+            var found = GetCrossPoint(a1.ToV2XZ(), a2.ToV2XZ(), b1.ToV2XZ(), b2.ToV2XZ(), out result2, out ratio);
+            result = result2.ToV3Y(Mathf.Lerp(a1.y, a2.y, ratio));
             return found;
         }
 
@@ -824,7 +824,7 @@ namespace NipaFriends
         }
 
         public static bool IsLineCross(Vector3 _lineAStart, Vector3 _lineAEnd, Vector3 _lineBStart, Vector3 _lineBEnd)
-            => IsLineCross(_lineAStart.ToV2(), _lineAEnd.ToV2(), _lineBStart.ToV2(), _lineBEnd.ToV2());
+            => IsLineCross(_lineAStart.ToV2XZ(), _lineAEnd.ToV2XZ(), _lineBStart.ToV2XZ(), _lineBEnd.ToV2XZ());
 
 
         ///<summary>
@@ -1376,9 +1376,14 @@ namespace NipaFriends
         ///[ROLE] : vector3をvector2に （x,z）
         ///[note] : 高度（y）は切り捨て
         ///</summary>
-        public static Vector2 ToV2(this Vector3 _v)
+        public static Vector2 ToV2XZ(this Vector3 _v)
         {
             return new Vector2(_v.x, _v.z);
+        }
+
+        public static Vector2 ToV2XY(this Vector3 _v)
+        {
+            return new Vector2(_v.x, _v.y);
         }
 
         public static Vector3 SetY(this Vector3 _v, float y)
@@ -1391,9 +1396,14 @@ namespace NipaFriends
         ///[ROLE] : Vector2をvector3
         ///[note] : 高度を指定する
         ///</summary>
-        public static Vector3 ToV3(this Vector2 _v, float _y)
+        public static Vector3 ToV3Y(this Vector2 _v, float _y)
         {
             return new Vector3(_v.x, _y, _v.y);
+        }
+
+        public static Vector3 ToV3Z(this Vector2 _v, float z)
+        {
+            return new Vector3(_v.x, _v.y, z);
         }
 
         public static Vector3 Scale(this Vector3 _v, float sx, float sy, float sz)
