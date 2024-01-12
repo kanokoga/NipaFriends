@@ -9,9 +9,10 @@ namespace NipaFriends.WorldSpaces
     /// 二次元矩形衝突判定
     /// http://marupeke296.com/COL_2D_No8_QuadTree.html
     ///</summary>
-    public class NipaCollisionDetector2
+    public class NipaCollisionChecker<T> where T : struct
     {
-        private Vector2 spaceSize;
+        public Vector2 SpaceSize { get; private set; }
+
         private Dictionary<int, List<ObjectData>> objectsPerCell = new Dictionary<int, List<ObjectData>>();
         private List<CollisionPair> collidedPairs = new List<CollisionPair>();
         private bool[] isCheckNeeded;
@@ -20,11 +21,12 @@ namespace NipaFriends.WorldSpaces
         private Stack<ObjectData> collisionTestTargets = new Stack<ObjectData>();
         private int maxCellCoord;
 
-        public NipaCollisionDetector2(int spaceLevel, Vector2 spaceSize)
+
+        public NipaCollisionChecker(int spaceLevel, Vector2 spaceSize)
         {
             this.spaceLevelCount = spaceLevel;
-            this.spaceSize = spaceSize;
-            this.lowestLevelCellSize = this.spaceSize / Mathf.Pow(2, this.spaceLevelCount - 1);
+            this.SpaceSize = spaceSize;
+            this.lowestLevelCellSize = this.SpaceSize / Mathf.Pow(2, this.spaceLevelCount - 1);
             this.isCheckNeeded = new bool[Mathf.RoundToInt(Mathf.Pow(4, this.spaceLevelCount)) + 1];
             this.maxCellCoord = 2 * spaceLevel - 1;
         }
@@ -35,17 +37,17 @@ namespace NipaFriends.WorldSpaces
         /// 衝突判定対象オブジェクトを登録する
         /// 座標は左下を原点とした正の場合のみ有効
         ///</summary>
-        public bool AddObject(int id, Vector2 center, Vector2 size)
+        public void AddObject(T target, Vector2 center, Vector2 size)
         {
             var obj = new ObjectData();
             obj.center = center;
             obj.size = size;
-            obj.id = id;
+            obj.obj = target;
 
             var linerCellId = this.GetLinerCellId(obj);
             if(linerCellId < 0 || linerCellId >= this.isCheckNeeded.Length)
             {
-                return false;
+                return;
             }
 
             if(this.objectsPerCell.ContainsKey(linerCellId) == false)
@@ -63,8 +65,6 @@ namespace NipaFriends.WorldSpaces
                 this.isCheckNeeded[parentLinerId] = true;
                 linerCellId = parentLinerId;
             }
-
-            return true;
         }
 
         public void Calc(Action<List<CollisionPair>> callback)
@@ -178,7 +178,7 @@ namespace NipaFriends.WorldSpaces
                     {
                         if(this.IsCollide_Rap(objectsInCell[i], objectsInCell[v]))
                         {
-                            this.collidedPairs.Add(new CollisionPair(objectsInCell[i].id, objectsInCell[v].id));
+                            this.collidedPairs.Add(new CollisionPair(objectsInCell[i].obj, objectsInCell[v].obj));
                         }
                     }
                 }
@@ -189,7 +189,7 @@ namespace NipaFriends.WorldSpaces
                     {
                         if(this.IsCollide_Rap(otherObj, objectsInCell[v]))
                         {
-                            this.collidedPairs.Add(new CollisionPair(otherObj.id, objectsInCell[v].id));
+                            this.collidedPairs.Add(new CollisionPair(otherObj.obj, objectsInCell[v].obj));
                         }
                     }
                 }
@@ -282,21 +282,21 @@ namespace NipaFriends.WorldSpaces
 
         private struct ObjectData
         {
-            public int id;
+            public T obj;
             public Vector2 center;
             public Vector2 size;
         }
 
         public struct CollisionPair
         {
-            public CollisionPair(int a, int b)
+            public CollisionPair(T a, T b)
             {
-                this.idA = a;
-                this.idB = b;
+                this.objA = a;
+                this.objB = b;
             }
 
-            public int idA;
-            public int idB;
+            public T objA;
+            public T objB;
         }
 
         #endregion

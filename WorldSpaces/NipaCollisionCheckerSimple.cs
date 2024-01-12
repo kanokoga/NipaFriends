@@ -9,7 +9,7 @@ namespace NipaFriends.WorldSpaces
     /// 二次元矩形衝突判定
     /// http://marupeke296.com/COL_2D_No8_QuadTree.html
     ///</summary>
-    public class NipaCollisionDetector2Single
+    public class NipaCollisionCheckerSimple
     {
         private Vector2 spaceSize;
         private Dictionary<int, List<ObjectData>> objectsPerCell = new Dictionary<int, List<ObjectData>>();
@@ -19,9 +19,8 @@ namespace NipaFriends.WorldSpaces
         private Vector2 lowestLevelCellSize;
         private Stack<ObjectData> collisionTestTargets = new Stack<ObjectData>();
         private int maxCellCoord;
-        private int mainObjectLinerCellId;
 
-        public NipaCollisionDetector2Single(int spaceLevel, Vector2 spaceSize)
+        public NipaCollisionCheckerSimple(int spaceLevel, Vector2 spaceSize)
         {
             this.spaceLevelCount = spaceLevel;
             this.spaceSize = spaceSize;
@@ -36,7 +35,7 @@ namespace NipaFriends.WorldSpaces
         /// 衝突判定対象オブジェクトを登録する
         /// 座標は左下を原点とした正の場合のみ有効
         ///</summary>
-        public bool AddObject(int id, Vector2 center, Vector2 size, bool isMainObject)
+        public bool AddObject(int id, Vector2 center, Vector2 size)
         {
             var obj = new ObjectData();
             obj.center = center;
@@ -48,12 +47,6 @@ namespace NipaFriends.WorldSpaces
             {
                 return false;
             }
-
-            if(isMainObject == true)
-            {
-                this.mainObjectLinerCellId = linerCellId;
-            }
-
 
             if(this.objectsPerCell.ContainsKey(linerCellId) == false)
             {
@@ -77,13 +70,12 @@ namespace NipaFriends.WorldSpaces
         public void Calc(Action<List<CollisionPair>> callback)
         {
             this.collisionTestTargets = new Stack<ObjectData>();
-            this.DetectCollision(this.mainObjectLinerCellId);
+            this.DetectCollision(0);
             callback(this.collidedPairs);
         }
 
         public void Reset()
         {
-            this.mainObjectLinerCellId = 0;
             this.objectsPerCell.Clear();
             for(int i = 0; i < this.isCheckNeeded.Length; i++)
             {
