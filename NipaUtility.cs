@@ -1391,6 +1391,10 @@ namespace NipaFriends
             return new Vector3(_v.x, y, _v.z);
         }
 
+        public static Vector3 SwapYZ(this Vector3 _v)
+        {
+            return new Vector3(_v.x, _v.z, _v.y);
+        }
 
         ///<summary>
         ///[ROLE] : Vector2をvector3
