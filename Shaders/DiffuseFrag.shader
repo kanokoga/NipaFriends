@@ -1,4 +1,4 @@
-﻿Shader "Unlit/VerDiffuse"
+﻿Shader "Custom/DiffuseFrag"
 {
     Properties
     {
@@ -13,8 +13,8 @@
             #pragma vertex vert
             #pragma fragment frag
 
-            sampler2D _MainTex;
 
+            //structs
             struct vertexInput
             {
                 float4 vertex : POSITION;
@@ -24,33 +24,33 @@
 
             struct vertexOutput
             {
-                float4 position : POSITION;
+                float4 pos : SV_POSITION;
+                float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
-                float power : COLOR0;
             };
+
+            sampler2D _MainTex;
 
             vertexOutput vert(vertexInput v)
             {
                 vertexOutput o;
-
-                o.position = UnityObjectToClipPos(v.vertex);
+                o.normal = normalize(mul(unity_WorldToObject, float4(v.normal, 0.0)).xyz);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
-
-                float3 normal = normalize(mul(unity_WorldToObject, float4(v.normal, 0.0)).xyz);
-                half power = max(0, dot(normal, _WorldSpaceLightPos0.xyz));
-                o.power = saturate(power);
-
                 return o;
             }
 
             float4 frag(vertexOutput i) : COLOR
             {
                 float4 col = tex2D(_MainTex, i.uv);
-                col *= i.power;
+                float3 lightDir = _WorldSpaceLightPos0.xyz;
+                float diffPower = saturate(dot(i.normal, lightDir));
+                col.rgb *= diffPower;
                 return col;
             }
             ENDCG
-
         }
+
     }
+    //Falback "Diffuse"
 }
