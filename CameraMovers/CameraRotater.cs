@@ -36,5 +36,10 @@ namespace NipaFriends.CameraMovers
                 this.camera.Translate(0f, 0f, scrollDelta * Time.deltaTime * this.zoomSpeed);
             }
         }
+
+        public void SetHoriaonalAngle(float angle)
+        {
+            this.lookTarget.localRotation = Quaternion.Euler(0f, angle, 0f);
+        }
     }
 }
