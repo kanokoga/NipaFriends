@@ -70,10 +70,6 @@ namespace NipaFriends.Guis
             this.skin.verticalSlider.fixedWidth =
             this.skin.verticalSliderThumb.fixedWidth = Mathf.Max(size, 14f);
         }
-
-        private void OnDestroy()
-        {
-            instance = null;
-        }
+        
     }
 }

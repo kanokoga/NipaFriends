@@ -5,32 +5,34 @@ namespace NipaFriends
 {
     public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
-        protected static T instance;
+        private static T instance;
         public static T Instance
         {
             get
             {
-                if (Init == false)
+                if (instance == null)
                 {
-                    instance = (T)FindFirstObjectByType(typeof(T));
+                    instance = (T)FindObjectOfType(typeof(T));
 
                     if (instance == null)
                     {
                         Debug.LogError(typeof(T) + " is nothing");
                     }
-                    
-                    Init = true;
                 }
 
                 return instance;
             }
         }
 
-        private static bool Init = false;
-
-        protected virtual void OnDestroy()
+        static bool first = true;
+        public static T GetInstance()
         {
-            Init = false;
+            if (first && instance == null)
+            {
+                first = false;
+                instance = (T)FindObjectOfType(typeof(T));
+            }
+            return instance;
         }
     }
 }
