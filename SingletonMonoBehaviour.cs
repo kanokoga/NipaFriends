@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace NipaFriends
 {
@@ -9,7 +10,7 @@ namespace NipaFriends
         {
             get
             {
-                if (instance == null)
+                if (Init == false)
                 {
                     instance = (T)FindFirstObjectByType(typeof(T));
 
@@ -17,21 +18,19 @@ namespace NipaFriends
                     {
                         Debug.LogError(typeof(T) + " is nothing");
                     }
+                    
+                    Init = true;
                 }
 
                 return instance;
             }
         }
 
-        static bool first = true;
-        public static T GetInstance()
+        private static bool Init = false;
+
+        protected virtual void OnDestroy()
         {
-            if (first && instance == null)
-            {
-                first = false;
-                instance = (T)FindFirstObjectByType(typeof(T));
-            }
-            return instance;
+            Init = false;
         }
     }
 }
