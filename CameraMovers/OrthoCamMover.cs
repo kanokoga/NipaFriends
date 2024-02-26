@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using NipaFriends;
 using PrefsGUI;
-using PrefsGUI.RapidGUI;
-using RapidGUI;
 using UnityEngine;
 
 namespace NipaFriends
 {
-    public class OrthoCamMover : SingletonMonoBehaviour<OrthoCamMover>, IDoGUI
+    public class OrthoCamMover : SingletonMonoBehaviour<OrthoCamMover>
     {
         public event Action<float> OnCameraZoomSizeChanged = delegate(float f) { };
         public float CamraSize => this.cam.orthographicSize;
@@ -67,12 +65,12 @@ namespace NipaFriends
             this.transform.position = camPos;
         }
 
-        public void DoGUI()
-        {
-            this.camMoveSpeed.DoGUI();
-            this.camZoomSpeed.DoGUI();
-            this.camZoomMinMax.DoGUI();
-        }
+        // public void DoGUI()
+        // {
+        //     this.camMoveSpeed.DoGUI();
+        //     this.camZoomSpeed.DoGUI();
+        //     this.camZoomMinMax.DoGUI();
+        // }
 
         private void OnDrawGizmos()
         {

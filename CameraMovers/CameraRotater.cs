@@ -20,14 +20,14 @@ namespace NipaFriends.CameraMovers
 
         private void Update()
         {
-            if(Input.GetMouseButton(1) == true)
-            {
-                var mousePositionDeltaNormalized = Input.mousePositionDelta;
-                mousePositionDeltaNormalized.x /= Screen.width;
-                mousePositionDeltaNormalized.y /= Screen.height;
-                this.lookTarget.Rotate(0f, mousePositionDeltaNormalized.x * this.rotationSpeed, 0f);
-                this.childInLookTarget.Rotate(-mousePositionDeltaNormalized.y * this.rotationSpeed, 0f, 0f);
-            }
+            // if(Input.GetMouseButton(1) == true)
+            // {
+            //     var mousePositionDeltaNormalized = Input.mousePositionDelta;
+            //     mousePositionDeltaNormalized.x /= Screen.width;
+            //     mousePositionDeltaNormalized.y /= Screen.height;
+            //     this.lookTarget.Rotate(0f, mousePositionDeltaNormalized.x * this.rotationSpeed, 0f);
+            //     this.childInLookTarget.Rotate(-mousePositionDeltaNormalized.y * this.rotationSpeed, 0f, 0f);
+            // }
 
             var mouseScrollDelta = Input.mouseScrollDelta;
             if(mouseScrollDelta.y != 0f)
