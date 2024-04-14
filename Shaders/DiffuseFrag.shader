@@ -44,7 +44,7 @@
             {
                 float4 col = tex2D(_MainTex, i.uv);
                 float3 lightDir = _WorldSpaceLightPos0.xyz;
-                float diffPower = saturate(dot(i.normal, lightDir));
+                float diffPower = saturate((dot(i.normal, lightDir) + 0.5) * 0.5);
                 col.rgb *= diffPower;
                 return col;
             }
