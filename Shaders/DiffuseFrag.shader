@@ -34,7 +34,7 @@
             vertexOutput vert(vertexInput v)
             {
                 vertexOutput o;
-                o.normal = normalize(mul(unity_WorldToObject, float4(v.normal, 0.0)).xyz);
+                o.normal = normalize(mul(unity_ObjectToWorld, float4(v.normal, 0.0)).xyz);
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 return o;

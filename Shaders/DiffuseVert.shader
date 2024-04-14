@@ -36,7 +36,7 @@
                 o.position = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
 
-                float3 normal = normalize(mul(unity_WorldToObject, float4(v.normal, 0.0)).xyz);
+                float3 normal = normalize(mul(unity_ObjectToWorld, float4(v.normal, 0.0)).xyz);
                 half power = max(0, dot(normal, _WorldSpaceLightPos0.xyz));
                 o.power = saturate(power);
 
