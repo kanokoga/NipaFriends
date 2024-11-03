@@ -12,18 +12,19 @@ namespace NipaFriends.WorldSpaces
             public int cost;
         }
 
-        public static int NoPassCost = 9999;
+        public const byte NoPassCost = 255;
 
-        private int[] costPerTile;
+        private byte[] costPerTile;
         private int tileCountPerEdge;
+
 
         public TileNavigation(int tileCountPerEdge)
         {
-            this.costPerTile = new int[tileCountPerEdge * tileCountPerEdge];
+            this.costPerTile = new byte[tileCountPerEdge * tileCountPerEdge];
             this.tileCountPerEdge = tileCountPerEdge;
         }
 
-        public void SetCost(Vector2Int pos, int cost)
+        public void SetCost(Vector2Int pos, byte cost)
         {
             var index = this.GetTileIndex(pos.x, pos.y);
             this.costPerTile[index] = cost;
@@ -35,7 +36,7 @@ namespace NipaFriends.WorldSpaces
         /// <param name="start"></param>
         /// <param name="goal"></param>
         /// <returns></returns>
-        public List<Vector2Int> GetRoute(Vector2Int start, Vector2Int goal)
+        public List<Vector2Int> GetRoute(Vector2Int start, Vector2Int goal, bool isDiagonal = false)
         {
             var queue = new Queue<Vector2Int>();
             var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
@@ -54,7 +55,7 @@ namespace NipaFriends.WorldSpaces
 
                 if(current == goal)
                 {
-                    var route = this.ReconstructPath(cameFrom, current);
+                    var route = this.ReconstructPath(cameFrom, current, isDiagonal);
                     route.Add(goal);
                     return route;
                 }
@@ -94,15 +95,15 @@ namespace NipaFriends.WorldSpaces
             {
                 neighborIndex[0] = new Vector2Int(GetIndex(relative.x), 0);
                 neighborIndex[1] = new Vector2Int(0, GetIndex(relative.y));
-                neighborIndex[3] = new Vector2Int(0, -GetIndex(relative.y));
-                neighborIndex[2] = new Vector2Int(-GetIndex(relative.x), 0);
+                neighborIndex[2] = new Vector2Int(0, -GetIndex(relative.y));
+                neighborIndex[3] = new Vector2Int(-GetIndex(relative.x), 0);
             }
             else
             {
                 neighborIndex[0] = new Vector2Int(0, GetIndex(relative.y));
                 neighborIndex[1] = new Vector2Int(GetIndex(relative.x), 0);
-                neighborIndex[3] = new Vector2Int(-GetIndex(relative.x), 0);
-                neighborIndex[2] = new Vector2Int(0, -GetIndex(relative.y));
+                neighborIndex[2] = new Vector2Int(-GetIndex(relative.x), 0);
+                neighborIndex[3] = new Vector2Int(0, -GetIndex(relative.y));
             }
         }
 
@@ -120,13 +121,38 @@ namespace NipaFriends.WorldSpaces
             }
         }
 
-        private List<Vector2Int> ReconstructPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)
+        private List<Vector2Int> ReconstructPath(
+            Dictionary<Vector2Int, Vector2Int> cameFrom,
+            Vector2Int current,
+            bool isDiagonal)
         {
             var totalPath = new List<Vector2Int> { current };
-            while(cameFrom.ContainsKey(current))
+
+            if(isDiagonal == false)
             {
-                current = cameFrom[current];
-                totalPath.Add(current);
+                while(cameFrom.ContainsKey(current))
+                {
+                    current = cameFrom[current];
+                    totalPath.Add(current);
+                }
+            }
+            else
+            {
+                while(cameFrom.ContainsKey(current))
+                {
+                    var previous = current;
+                    current = cameFrom[current];
+                    if(cameFrom.ContainsKey(current))
+                    {
+                        var next = cameFrom[current];
+                        var relative = next - previous;
+                        if(Mathf.Abs(relative.x) > 0 && Mathf.Abs(relative.y) > 0) // diagonal move
+                        {
+                            current = next;
+                        }
+                    }
+                    totalPath.Add(current);
+                }
             }
 
             totalPath.Reverse();
