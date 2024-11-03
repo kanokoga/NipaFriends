@@ -5,12 +5,12 @@ namespace NipaFriends
 {
     public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
-        private static T instance;
+
         public static T Instance
         {
             get
             {
-                if (instance == null)
+                if (HasInstance == false)
                 {
                     instance = (T)FindObjectOfType(typeof(T));
 
@@ -18,21 +18,23 @@ namespace NipaFriends
                     {
                         Debug.LogError(typeof(T) + " is nothing");
                     }
+                    else
+                    {
+                        HasInstance = true;
+                    }
                 }
 
                 return instance;
             }
         }
 
-        static bool first = true;
-        public static T GetInstance()
+        private static T instance;
+        private static bool HasInstance = false;
+
+        protected virtual void OnDestroy()
         {
-            if (first && instance == null)
-            {
-                first = false;
-                instance = (T)FindObjectOfType(typeof(T));
-            }
-            return instance;
+            instance = null;
+            HasInstance = false;
         }
     }
 }
