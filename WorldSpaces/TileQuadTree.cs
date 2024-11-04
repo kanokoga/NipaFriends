@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace NipaFriends.WorldSpaces
 {
+    // todo
+    // quad作成時にquadが属するモートン番号を計算する
+    //　グリッドのステータスが変更されたらそのグリッドのモートン番号を計算する
+    //　モートン番号を元にquadを取得する
     public class TileQuadTree
     {
         private QuadTree quadTree;
@@ -40,7 +44,7 @@ namespace NipaFriends.WorldSpaces
 
         public void AddQT(int x, int y, int width, int height, bool[,] grid, List<QuadTree> regions)
         {
-            if(this.ContainsObstacle(x, y, width, height, grid) == true && (width > 1 || height > 1))
+            if(this.ContainsObstacle(x, y, width, height, grid) == true && (width > 1 && height > 1))
             {
                 var halfWidth = width / 2;
                 var halfHeight = height / 2;
