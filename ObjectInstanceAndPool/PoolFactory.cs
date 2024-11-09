@@ -7,23 +7,26 @@ using System;
 
 namespace NipaFriends
 {
+    /// <summary>
+    /// プール付きのオブジェクト生成クラス。
+    /// 非MonoBehaviourタイプ
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [Serializable]
-    public class AdvPoolFactory<T> where T : MonoBehaviour
+    public class PoolFactory<T> where T : MonoBehaviour
     {
         [SerializeField] private T prefab;
-        public int PooledObjectCount => this.pool.PooledObjectCount;
+        [SerializeField] private Transform poolTransform;
         private ObjectPool<T> pool;
-        private Transform poolTransform;
-        private Action<T> onCreated;
 
-        public AdvPoolFactory()
+
+        public PoolFactory(Transform pool = null)
         {
+            if(pool!=null)
+            {
+                this.poolTransform = pool;
+            }
             this.pool = new ObjectPool<T>(this.CreateObject);
-        }
-
-        public void Init(Transform pool)
-        {
-            this.poolTransform = pool;
         }
 
         public T GetObject()
