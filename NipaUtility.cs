@@ -1420,6 +1420,19 @@ namespace NipaFriends
             return new Vector3(_v.x * sx, _v.y * sy, _v.z * sz);
         }
 
+        public static Vector3 Sum(this IEnumerable<Vector3> vectors)
+        {
+            return vectors.Aggregate(Vector3.zero, (acc, v) => acc + v);
+        }
+
+        public static Vector3 Average(this IEnumerable<Vector3> vectors)
+        {
+            var count = vectors.Count();
+            if (count == 0)
+                return Vector3.zero;
+            return vectors.Sum() / count;
+        }
+
 
         ///<summary>
         ///[ROLE] : Vector2をvector3
