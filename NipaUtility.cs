@@ -262,17 +262,6 @@ namespace NipaFriends
 
 
         ///<summary>
-        /// [ROLE] : 地点Aと地点Bを結ぶ線上で地点Aから指定比率離れた地点を返す
-        /// [note] : 比率指定無しで中間地点(0.5)
-        ///</summary>
-        public static Vector3 GetPositionBetweenRatio(Vector3 _posA, Vector3 _posB, float _ratio = 0.5f)
-        {
-            var relative = (_posB - _posA);
-            return _posA + relative * _ratio;
-        }
-
-
-        ///<summary>
         /// [ROLE] : 地点Aと地点Bを結ぶ線上で地点Aから指定距離離れた地点を返す
         /// [note] : -
         ///</summary>
@@ -380,6 +369,16 @@ namespace NipaFriends
             }
 
             return inside;
+        }
+
+        public static bool IsBetween(Vector3 A, Vector3 B, Vector3 C)
+        {
+            var AB = B - A;
+            var AC = C - A;
+
+            float t = Vector3.Dot(AC, AB) / Vector3.Dot(AB, AB);
+
+            return (0f <= t) && (t <= 1f);
         }
 
 
@@ -491,19 +490,6 @@ namespace NipaFriends
                 return false;
             }
         }
-
-
-        ///<summary>
-        /// [ROLE] : 線分ABに対して点Cの対象な点を求める
-        /// [note] : -
-        ///</summary>
-        public static Vector3 GetPositionOppositeLine(Vector3 _posA, Vector3 _posB, Vector3 _posC)
-        {
-            Vector3 posO;
-            GetPositionOnLineFromPoint(_posA, _posB, _posC, out posO);
-            return GetPositionBetweenRatio(_posC, posO, 2f);
-        }
-
 
         ///<summary>
         /// [ROLE] : 観察者から見た角度で観察者から指定距離離れた場所の座標を返す(-180~180)
@@ -662,9 +648,6 @@ namespace NipaFriends
 
         public static bool IsBothFront(Vector3 origin, Vector3 a, Vector3 b)
             => GetVector3Dot(origin, a, b) > 0f;
-
-        public static bool IsBetween(Vector3 origin, Vector3 a, Vector3 b)
-            => GetVector3Dot(origin, a, b) < 0f;
 
         #endregion
 
