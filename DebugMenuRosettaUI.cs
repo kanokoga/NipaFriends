@@ -10,8 +10,8 @@ namespace NipaFriends
 #if ROSETTA_UI
         public KeyCode toggleKeyCode = KeyCode.D;
         public char toggleKey = 'd';
-        private RosettaUIRoot _root;
-        private Element _element;
+        protected RosettaUIRoot _root;
+        protected Element _element;
 
 
         protected virtual void Start()

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using System.IO;
 using System;
+using JetBrains.Annotations;
 using Random = UnityEngine.Random;
 
 namespace NipaFriends
@@ -1428,7 +1429,7 @@ namespace NipaFriends
         public static Vector3 Average(this IEnumerable<Vector3> vectors)
         {
             var count = vectors.Count();
-            if (count == 0)
+            if(count == 0)
                 return Vector3.zero;
             return vectors.Sum() / count;
         }
@@ -1482,6 +1483,29 @@ namespace NipaFriends
             _cild.localScale = Vector3.one * _scale;
             _cild.localRotation = Quaternion.identity;
         }
+    }
+
+    public static class NipaCos
+    {
+        public static readonly float Cos10 = Mathf.Cos(10f * Mathf.Deg2Rad);
+        public static readonly float Cos20 = Mathf.Cos(20f * Mathf.Deg2Rad);
+        public static readonly float Cos30 = Mathf.Cos(30f * Mathf.Deg2Rad);
+        public static readonly float Cos40 = Mathf.Cos(40f * Mathf.Deg2Rad);
+        public static readonly float Cos45 = Mathf.Cos(45f * Mathf.Deg2Rad);
+        public static readonly float Cos50 = Mathf.Cos(50f * Mathf.Deg2Rad);
+        public static readonly float Cos60 = Mathf.Cos(60f * Mathf.Deg2Rad);
+        public static readonly float Cos70 = Mathf.Cos(70f * Mathf.Deg2Rad);
+        public static readonly float Cos80 = Mathf.Cos(80f * Mathf.Deg2Rad);
+        public static readonly float Cos90 = Mathf.Cos(90f * Mathf.Deg2Rad);
+        public static readonly float Cos100 = Mathf.Cos(100f * Mathf.Deg2Rad);
+        public static readonly float Cos110 = Mathf.Cos(110f * Mathf.Deg2Rad);
+        public static readonly float Cos120 = Mathf.Cos(120f * Mathf.Deg2Rad);
+        public static readonly float Cos130 = Mathf.Cos(130f * Mathf.Deg2Rad);
+        public static readonly float Cos135 = Mathf.Cos(135f * Mathf.Deg2Rad);
+        public static readonly float Cos140 = Mathf.Cos(140f * Mathf.Deg2Rad);
+        public static readonly float Cos150 = Mathf.Cos(150f * Mathf.Deg2Rad);
+        public static readonly float Cos160 = Mathf.Cos(160f * Mathf.Deg2Rad);
+        public static readonly float Cos170 = Mathf.Cos(170f * Mathf.Deg2Rad);
     }
 
     ///<summary>
