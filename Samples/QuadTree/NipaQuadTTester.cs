@@ -6,7 +6,7 @@ using NipaFriends.WorldSpaces;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace NipaFriends.Development
+namespace NipaFriends.Samples
 {
     public class NipaQuadTTester : MonoBehaviour
     {
