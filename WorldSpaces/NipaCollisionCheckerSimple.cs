@@ -77,7 +77,7 @@ namespace NipaFriends.WorldSpaces
         public void Reset()
         {
             this.objectsPerCell.Clear();
-            for(int i = 0; i < this.isCheckNeeded.Length; i++)
+            for(var i = 0; i < this.isCheckNeeded.Length; i++)
             {
                 this.isCheckNeeded[i] = false;
             }
@@ -122,7 +122,7 @@ namespace NipaFriends.WorldSpaces
                 .PadLeft((this.spaceLevelCount - 1) * 2, '0'); //Debug.Log(temp);
             var shiftCount = this.spaceLevelCount - 1;
 
-            for(int i = 0; i < temp.Length; i += 2)
+            for(var i = 0; i < temp.Length; i += 2)
             {
                 if(temp.Substring(i, 1) == "1" || temp.Substring(i + 1, 1) == "1")
                 {
@@ -172,9 +172,9 @@ namespace NipaFriends.WorldSpaces
             var cellContainObjects = false;
             if(this.GetObjectsInCell(targetLinerCellIndex, out objectsInCell))
             {
-                for(int i = 0; i < objectsInCell.Length; i++)
+                for(var i = 0; i < objectsInCell.Length; i++)
                 {
-                    for(int v = i + 1; v < objectsInCell.Length; v++)
+                    for(var v = i + 1; v < objectsInCell.Length; v++)
                     {
                         if(this.IsCollide_Rap(objectsInCell[i], objectsInCell[v]))
                         {
@@ -185,7 +185,7 @@ namespace NipaFriends.WorldSpaces
 
                 foreach(var otherObj in this.collisionTestTargets)
                 {
-                    for(int v = 0; v < objectsInCell.Length; v++)
+                    for(var v = 0; v < objectsInCell.Length; v++)
                     {
                         if(this.IsCollide_Rap(otherObj, objectsInCell[v]))
                         {
@@ -201,7 +201,7 @@ namespace NipaFriends.WorldSpaces
             {
                 var childFound = false;
 
-                for(int i = 0; i < 4; i++)
+                for(var i = 0; i < 4; i++)
                 {
                     var childLinerCellIndex = targetLinerCellIndex * 4 + i + 1;
                     if(this.isCheckNeeded[childLinerCellIndex])
@@ -221,7 +221,7 @@ namespace NipaFriends.WorldSpaces
                         }
                     }
 
-                    for(int i = 0; i < 4; i++)
+                    for(var i = 0; i < 4; i++)
                     {
                         var childLinerCellIndex = targetLinerCellIndex * 4 + i + 1;
                         if(this.isCheckNeeded[childLinerCellIndex])
@@ -233,7 +233,7 @@ namespace NipaFriends.WorldSpaces
 
                     if(cellContainObjects)
                     {
-                        for(int i = 0; i < objectsInCell.Length; i++)
+                        for(var i = 0; i < objectsInCell.Length; i++)
                         {
                             this.collisionTestTargets.Pop();
                         }

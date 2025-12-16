@@ -19,7 +19,7 @@ namespace NipaFriends
         public MeshNavigation(MeshFaceData faceData)
         {
             var nodes = new List<NipaDijkstra.Node>();
-            for(int i = 0; i < faceData.faces.Length; i++)
+            for(var i = 0; i < faceData.faces.Length; i++)
             {
                 var face = faceData.faces[i];
                 var node = new NipaDijkstra.Node()
@@ -28,7 +28,7 @@ namespace NipaFriends
                     neighborIdAndCost = new Dictionary<int, float>()
                 };
 
-                for(int j = 0; j < face.neighborIndex.Count; j++)
+                for(var j = 0; j < face.neighborIndex.Count; j++)
                 {
                     var neighborIndex = face.neighborIndex[j];
                     var neighborFace = faceData.faces[neighborIndex];
@@ -54,9 +54,9 @@ namespace NipaFriends
             var endIndex = -1;
             var minDistance = float.MaxValue;
 
-            for(int i = 0; i < faces.Length; i++)
+            for(var i = 0; i < this.faces.Length; i++)
             {
-                var face = faces[i];
+                var face = this.faces[i];
                 var distance = (face.position - localStart).sqrMagnitude;
                 if(distance < minDistance)
                 {
@@ -66,9 +66,9 @@ namespace NipaFriends
             }
 
             minDistance = float.MaxValue;
-            for(int i = 0; i < faces.Length; i++)
+            for(var i = 0; i < this.faces.Length; i++)
             {
-                var face = faces[i];
+                var face = this.faces[i];
                 var distance = (face.position - localEnd).sqrMagnitude;
                 if(distance < minDistance)
                 {
@@ -78,8 +78,8 @@ namespace NipaFriends
             }
 
             //find route
-            var route = dijkstra.GetRoute(startIndex, endIndex);
-            return route.Select(v => faces[v]).ToList();
+            var route = this.dijkstra.GetRoute(startIndex, endIndex);
+            return route.Select(v => this.faces[v]).ToList();
         }
     }
 
@@ -103,7 +103,7 @@ namespace NipaFriends
             var faces = new List<Face>();
 
 
-            for(int i = 0; i < mesh.triangles.Length; i += 3)
+            for(var i = 0; i < mesh.triangles.Length; i += 3)
             {
                 var vIndex0 = mesh.triangles[i];
                 var vIndex1 = mesh.triangles[i + 1];
@@ -128,11 +128,11 @@ namespace NipaFriends
                 faces.Add(face);
             }
 
-            for(int i = 0; i < faces.Count; i++)
+            for(var i = 0; i < faces.Count; i++)
             {
                 var face = faces[i];
 
-                for(int j = 0; j < faces.Count; j++)
+                for(var j = 0; j < faces.Count; j++)
                 {
                     if(i == j)
                     {
@@ -142,9 +142,9 @@ namespace NipaFriends
                     var otherFace = faces[j];
 
                     var nearCount = 0;
-                    for(int k = 0; k < face.verts.Length; k++)
+                    for(var k = 0; k < face.verts.Length; k++)
                     {
-                        for(int l = 0; l < otherFace.verts.Length; l++)
+                        for(var l = 0; l < otherFace.verts.Length; l++)
                         {
                             if(face.verts[k] == otherFace.verts[l])
                             {

@@ -324,7 +324,7 @@ namespace NipaFriends
             var crossedCount = 0;
             var rayEnd = Vector2.right * rayLength + pos;
 
-            for(int i = 0; i < vertexs.Count; i++)
+            for(var i = 0; i < vertexs.Count; i++)
             {
                 if(IsLineCross(pos, rayEnd, vertexs[i], vertexs[i == vertexs.Count - 1 ? 0 : i + 1]))
                 {
@@ -347,12 +347,12 @@ namespace NipaFriends
         public static bool IsPointInPolygon(Vector2 point, List<Vector2> polygon)
         {
             int polygonLength = polygon.Count, i = 0;
-            bool inside = false;
+            var inside = false;
             // x, y for tested point.
             float pointX = point.x, pointY = point.y;
             // start / end point for the current polygon segment.
             float startX, startY, endX, endY;
-            Vector2 endPoint = polygon[polygonLength - 1];
+            var endPoint = polygon[polygonLength - 1];
             endX = endPoint.x;
             endY = endPoint.y;
             while(i < polygonLength)
@@ -376,7 +376,7 @@ namespace NipaFriends
             var AB = B - A;
             var AC = C - A;
 
-            float t = Vector3.Dot(AC, AB) / Vector3.Dot(AB, AB);
+            var t = Vector3.Dot(AC, AB) / Vector3.Dot(AB, AB);
 
             return (0f <= t) && (t <= 1f);
         }
@@ -449,7 +449,7 @@ namespace NipaFriends
 
         public static bool GetCrossPoint(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, out Vector3 result)
         {
-            Vector2 result2 = Vector2.zero;
+            var result2 = Vector2.zero;
             float ratio;
             var found = GetCrossPoint(a1.ToV2XZ(), a2.ToV2XZ(), b1.ToV2XZ(), b2.ToV2XZ(), out result2, out ratio);
             result = result2.ToV3Y(Mathf.Lerp(a1.y, a2.y, ratio));
@@ -458,7 +458,7 @@ namespace NipaFriends
 
         public static bool GetCrossPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2, out Vector2 result)
         {
-            float dummy = 0f;
+            var dummy = 0f;
             return GetCrossPoint(a1, a2, b1, b2, out result, out dummy);
         }
 
@@ -545,12 +545,12 @@ namespace NipaFriends
             var paraO = 0f;
             var result = new Vector2[_resultNumber];
 
-            for(int r = 1; r < _resultNumber - 1; r++)
+            for(var r = 1; r < _resultNumber - 1; r++)
             {
                 para = delta * r;
                 paraO = 1f - para;
                 var p = Vector2.zero;
-                for(int i = 0; i < cpLength; i++)
+                for(var i = 0; i < cpLength; i++)
                 {
                     p.x += funcPara[i] * Mathf.Pow(paraO, cpLength - 1 - i) * Mathf.Pow(para, i) * _ctrlPoints[i].x;
                     p.y += funcPara[i] * Mathf.Pow(paraO, cpLength - 1 - i) * Mathf.Pow(para, i) * _ctrlPoints[i].y;
@@ -572,7 +572,7 @@ namespace NipaFriends
         public static Vector3[] GetFormation_Line(Vector3[] _positions, Vector3 _desti, float _interval,
             bool _sort = false)
         {
-            Vector3 center = Vector3.zero;
+            var center = Vector3.zero;
             foreach(var item in _positions)
             {
                 center += item;
@@ -587,7 +587,7 @@ namespace NipaFriends
             var formationWidthHalf = _interval * (_positions.Length - 1) / 2f;
             var results = new Vector3[_positions.Length];
 
-            for(int i = 0; i < results.Length; i++)
+            for(var i = 0; i < results.Length; i++)
             {
                 results[i] = _desti + dirNorm * (formationWidthHalf - _interval * i);
             }
@@ -612,7 +612,7 @@ namespace NipaFriends
             ///<summary> フォーメーション座標系からみたもとの点の横上での位置 </summary>
             var posXOnFormationWorld = new floatId[_positions.Length];
 
-            for(int i = 0; i < posXOnFormationWorld.Length; i++)
+            for(var i = 0; i < posXOnFormationWorld.Length; i++)
             {
                 posXOnFormationWorld[i] = new floatId(i, _positions[i].x * cos - _positions[i].z * sin);
             }
@@ -628,7 +628,7 @@ namespace NipaFriends
 
             var resultsSorted = new Vector3[_positions.Length];
 
-            for(int i = 0; i < resultsSorted.Length; i++)
+            for(var i = 0; i < resultsSorted.Length; i++)
             {
                 resultsSorted[posXOnFormationWorld[i].id] = results[i];
             }
@@ -660,7 +660,7 @@ namespace NipaFriends
                 target = new T[origin.Length];
             }
 
-            for(int i = 0; i < origin.Length; i++)
+            for(var i = 0; i < origin.Length; i++)
             {
                 target[i] = origin[i];
             }
@@ -676,9 +676,9 @@ namespace NipaFriends
         ///</summary>///
         public static void ColorTexture(Texture2D _tex, Color _color)
         {
-            for(int x = 0; x < _tex.width; x++)
+            for(var x = 0; x < _tex.width; x++)
             {
-                for(int z = 0; z < _tex.height; z++)
+                for(var z = 0; z < _tex.height; z++)
                 {
                     var c = _tex.GetPixel(x, z).r * _color;
                     _tex.SetPixel(x, z, c);
@@ -695,11 +695,11 @@ namespace NipaFriends
         ///</summary>///
         public static Texture2D CombineTexture2d(Texture2D _texA, Texture2D _texB)
         {
-            Texture2D tex = new Texture2D(_texA.width, _texA.height);
+            var tex = new Texture2D(_texA.width, _texA.height);
 
-            for(int x = 0; x < _texA.width; x++)
+            for(var x = 0; x < _texA.width; x++)
             {
-                for(int z = 0; z < _texA.height; z++)
+                for(var z = 0; z < _texA.height; z++)
                 {
                     var c = _texA.GetPixel(x, z) + _texB.GetPixel(x, z);
                     tex.SetPixel(x, z, c);
@@ -762,21 +762,21 @@ namespace NipaFriends
             var temp = new int[_level];
             var result = new int[_level];
 
-            for(int i = 0; i < result.Length; i++)
+            for(var i = 0; i < result.Length; i++)
             {
                 temp[i] = 1;
                 result[i] = 1;
             }
 
-            for(int i = 1; i < _level - 1; i++)
+            for(var i = 1; i < _level - 1; i++)
             {
                 //Debug.Log("level" + i);
-                for(int v = 1; v < i + 1; v++)
+                for(var v = 1; v < i + 1; v++)
                 {
                     result[v] = temp[v - 1] + temp[v];
                 }
 
-                for(int v = 1; v < i + 1; v++)
+                for(var v = 1; v < i + 1; v++)
                 {
                     temp[v] = result[v];
                 }
@@ -794,7 +794,7 @@ namespace NipaFriends
         {
             var isClear = false;
             var dir = _target.position + Vector3.up * 0.5f - _from;
-            Ray ray = new Ray(_from, dir);
+            var ray = new Ray(_from, dir);
             RaycastHit hit;
             if(Physics.Raycast(ray, out hit, _maxDist))
             {
@@ -949,7 +949,7 @@ namespace NipaFriends
         ///</summary>
         public static Vector3[] AddV3(Vector3[] _v, Vector3 _addtional)
         {
-            for(int i = 0; i < _v.Length; i++)
+            for(var i = 0; i < _v.Length; i++)
             {
                 _v[i] += _addtional;
             }
@@ -964,7 +964,7 @@ namespace NipaFriends
         ///</summary>
         public static int NeighborIndex(int _arrayLength, int _tgtIndex, int _dist)
         {
-            int result = _tgtIndex + _dist;
+            var result = _tgtIndex + _dist;
             if(result < 0)
             {
                 result = _arrayLength + result;
@@ -985,7 +985,7 @@ namespace NipaFriends
         public static int RandomIndex(float[] _elements)
         {
             var sum = 0f;
-            for(int i = 0; i < _elements.Length; i++)
+            for(var i = 0; i < _elements.Length; i++)
             {
                 sum += _elements[i];
             }
@@ -993,7 +993,7 @@ namespace NipaFriends
             var v = Random.value * sum;
             var current = 0f;
             var result = 0;
-            for(int i = 0; i < _elements.Length; i++)
+            for(var i = 0; i < _elements.Length; i++)
             {
                 current += _elements[i];
 
@@ -1033,7 +1033,7 @@ namespace NipaFriends
         {
             var ints = new int[_max - _min];
             var index = 0;
-            for(int i = _min; i <= _max; i++)
+            for(var i = _min; i <= _max; i++)
             {
                 if(i == _except)
                 {
@@ -1077,7 +1077,7 @@ namespace NipaFriends
         ///</summary>
         public static void CopyComponent(Component _original, GameObject _dest)
         {
-            System.Type compoType = _original.GetType();
+            var compoType = _original.GetType();
 
             var former = _dest.GetComponent(compoType);
             if(former != null)
@@ -1085,15 +1085,15 @@ namespace NipaFriends
                 Component.Destroy(former);
             }
 
-            Component newCompo = _dest.AddComponent(compoType);
+            var newCompo = _dest.AddComponent(compoType);
 
-            System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Public |
-                                                   System.Reflection.BindingFlags.NonPublic |
-                                                   System.Reflection.BindingFlags.Instance |
-                                                   System.Reflection.BindingFlags.Default |
-                                                   System.Reflection.BindingFlags.DeclaredOnly;
+            var flags = System.Reflection.BindingFlags.Public |
+                        System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.Default |
+                        System.Reflection.BindingFlags.DeclaredOnly;
 
-            System.Reflection.PropertyInfo[] pinfos = compoType.GetProperties(flags);
+            var pinfos = compoType.GetProperties(flags);
             foreach(var pinfo in pinfos)
             {
                 if(pinfo.CanWrite)
@@ -1106,7 +1106,7 @@ namespace NipaFriends
                 }
             }
 
-            System.Reflection.FieldInfo[] fileds = compoType.GetFields();
+            var fileds = compoType.GetFields();
             foreach(var field in fileds)
             {
                 field.SetValue(newCompo, field.GetValue(_original));
@@ -1126,7 +1126,7 @@ namespace NipaFriends
             float posX;
             float posZ;
 
-            for(int i = 0; i < _obejectCount; i++)
+            for(var i = 0; i < _obejectCount; i++)
             {
                 para = i * ((Mathf.PI * 2.0f) / _obejectCount);
                 posX = _radius * Mathf.Cos(para);
@@ -1152,7 +1152,7 @@ namespace NipaFriends
             float posX;
             float posZ;
 
-            for(int i = 0; i < _obejectCount; i++)
+            for(var i = 0; i < _obejectCount; i++)
             {
                 var range = Random.Range(_radiusRange.x, _radiusRange.y);
                 para = i * ((Mathf.PI * 2.0f) / _obejectCount);
@@ -1198,12 +1198,12 @@ namespace NipaFriends
                 end.y = s;
             }
 
-            int deltax = end.x - start.x;
+            var deltax = end.x - start.x;
 
-            int deltay = Mathf.Abs(end.y - start.y);
-            int error = Mathf.RoundToInt(deltax / 2f);
-            int ystep = 0;
-            int y = start.y;
+            var deltay = Mathf.Abs(end.y - start.y);
+            var error = Mathf.RoundToInt(deltax / 2f);
+            var ystep = 0;
+            var y = start.y;
 
             if(start.y < end.y)
             {
@@ -1214,7 +1214,7 @@ namespace NipaFriends
                 ystep = -1;
             }
 
-            for(int x = start.x; x < end.x; x++)
+            for(var x = start.x; x < end.x; x++)
             {
                 if(steep)
                 {
@@ -1248,10 +1248,10 @@ namespace NipaFriends
             try
             {
                 // Open the text file using a stream reader.
-                using(StreamReader sr = new StreamReader(_pathToTextFile))
+                using(var sr = new StreamReader(_pathToTextFile))
                 {
                     // Read the stream to a string, and write the string to the console.
-                    String line = sr.ReadToEnd();
+                    var line = sr.ReadToEnd();
                     result = line;
                 }
             }
@@ -1307,7 +1307,7 @@ namespace NipaFriends
             var path = System.IO.Path.Combine(_dirPath, _fileName);
 
             StreamWriter sw;
-            FileInfo fi = new FileInfo(path);
+            var fi = new FileInfo(path);
             sw = fi.AppendText();
 
             try
@@ -1425,7 +1425,7 @@ namespace NipaFriends
         public static Vector3[] ConvertV2ToV3(this Vector2[] _v, float _y)
         {
             var v3 = new Vector3[_v.Length];
-            for(int i = 0; i < _v.Length; i++)
+            for(var i = 0; i < _v.Length; i++)
             {
                 v3[i] = new Vector3(_v[i].x, _y, _v[i].y);
             }
@@ -1436,9 +1436,9 @@ namespace NipaFriends
         public static T CloneDeep<T>(this T target) where T : class
         {
             object clone = null;
-            using(System.IO.MemoryStream stream = new System.IO.MemoryStream())
+            using(var stream = new System.IO.MemoryStream())
             {
-                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter =
+                var formatter =
                     new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
                 formatter.Serialize(stream, target);
                 stream.Position = 0;

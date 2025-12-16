@@ -11,7 +11,7 @@ namespace NipaFriends.WorldSpaces
         {
             var parents = new List<INipaStepPath<T>>();
             var toCheck = new Queue<NodeInfo<T>>();
-            int stepPathFound = 0;
+            var stepPathFound = 0;
             var pathFound = new List<NodeInfo<T>>();
 
             parents.Add(start);
@@ -44,7 +44,7 @@ namespace NipaFriends.WorldSpaces
                 else
                 {
                     var neighbors = target.self.GetNeighbors();
-                    bool childAdded = false;
+                    var childAdded = false;
                     foreach (var n in neighbors)
                     {
                         if (parents.Contains(n))
@@ -67,7 +67,7 @@ namespace NipaFriends.WorldSpaces
             {
                 var ini = includeStartInResult ? item.parents.Count - 1 : item.parents.Count - 2;
                 var path = new Queue<T>();
-                for (int i = ini; i > -1; i--)
+                for (var i = ini; i > -1; i--)
                 {
                     path.Enqueue(item.parents[i]);
                 }

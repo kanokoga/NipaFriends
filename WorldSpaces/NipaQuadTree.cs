@@ -53,7 +53,7 @@ namespace NipaFriends.WorldSpaces
 
         public void GenerateTree()
         {
-            for(int i = 0; i < this.gridSize * this.gridSize; i++)
+            for(var i = 0; i < this.gridSize * this.gridSize; i++)
             {
                 var hasObject = this.HasObject(i);
                 if(hasObject == true)
@@ -61,7 +61,7 @@ namespace NipaFriends.WorldSpaces
                     var cellPos = this.GetCellPosition(i);
                     var mortonNumber = this.Get2DMortonNumber(cellPos);
                     var nodeIndexInDepth = 0;
-                    for(int d = 0; d <= this.maxTreeDepth; d++)
+                    for(var d = 0; d <= this.maxTreeDepth; d++)
                     {
                         var parentNodeIndexInDepth = nodeIndexInDepth;
                         nodeIndexInDepth = mortonNumber >> (2 * (this.maxTreeDepth - d));
@@ -77,7 +77,7 @@ namespace NipaFriends.WorldSpaces
 
         public void ClearTree()
         {
-            for(int i = 0; i < this.isTreeNodeExistPerLinerNodeIndex.Length; i++)
+            for(var i = 0; i < this.isTreeNodeExistPerLinerNodeIndex.Length; i++)
             {
                 this.isTreeNodeExistPerLinerNodeIndex[i] = 0;
             }
@@ -102,7 +102,7 @@ namespace NipaFriends.WorldSpaces
 
         public void ClearObject()
         {
-            for(int i = 0; i < this.hasObjectPerGrid.Length; i++)
+            for(var i = 0; i < this.hasObjectPerGrid.Length; i++)
             {
                 this.hasObjectPerGrid[i] = 0;
             }
@@ -179,9 +179,9 @@ namespace NipaFriends.WorldSpaces
         public string DebugHasObjectPerGrid()
         {
             var str = "";
-            for(int y = 0; y < this.gridSize; y++)
+            for(var y = 0; y < this.gridSize; y++)
             {
-                for(int x = 0; x < this.gridSize; x++)
+                for(var x = 0; x < this.gridSize; x++)
                 {
                     str += this.HasObject(this.GetGridIndex(new Vector2Int(x, y))) ? "1" : "0";
                 }
@@ -195,12 +195,12 @@ namespace NipaFriends.WorldSpaces
         public string DebugIsTreeNodeExistPerLinerNodeIndex()
         {
             var str = "";
-            for(int d = 0; d <= this.maxTreeDepth; d++)
+            for(var d = 0; d <= this.maxTreeDepth; d++)
             {
                 var startLinderIndex = this.GetLinerNodeIndex(d, 0);
                 var endLinderIndex = this.GetLinerNodeIndex(d, (int)Mathf.Pow(4, d) - 1);
 
-                for(int i = startLinderIndex; i <= endLinderIndex; i++)
+                for(var i = startLinderIndex; i <= endLinderIndex; i++)
                 {
                     str += this.HasNode(i) ? "1" : "0";
                     if(i > 0 && i % 4 == 0)

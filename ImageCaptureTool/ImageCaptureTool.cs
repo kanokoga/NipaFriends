@@ -61,7 +61,7 @@ public static class ImageCaptureTool
                           out outputPath);
         try
         {
-            Texture2D captureImage = Capture(camera, width, height, clearBack);
+            var captureImage = Capture(camera, width, height, clearBack);
 
             File.WriteAllBytes(outputPath, captureImage.EncodeToPNG());
 
@@ -96,9 +96,9 @@ public static class ImageCaptureTool
         // NOTE:
         // Keep presets.
 
-        Color            tempBackgroundColor = camera.backgroundColor;
-        CameraClearFlags tempClearFlags      = camera.clearFlags;
-        RenderTexture    tempTargetTexture   = camera.targetTexture;
+        var            tempBackgroundColor = camera.backgroundColor;
+        var tempClearFlags      = camera.clearFlags;
+        var    tempTargetTexture   = camera.targetTexture;
 
         if (clearBack)
         {

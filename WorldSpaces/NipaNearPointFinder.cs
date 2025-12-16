@@ -29,7 +29,7 @@ namespace NipaFriends.WorldSpaces
             this.isExist = new bool[this.cellSize.x + 1, this.cellSize.y + 1];
             this.pointIdsPerIndex = new Dictionary<Vector2Int, List<int>>();
 
-            for (int i = 0; i < points.Count; i++)
+            for (var i = 0; i < points.Count; i++)
             {
                 var info = points[i];
                 var cellIdex = this.GetCellIndex(info.position);
@@ -96,22 +96,22 @@ namespace NipaFriends.WorldSpaces
             result.Add(center + Vector2Int.up * distance);
             var index = 1;
 
-            for (int i = 0; i < distance; i++)
+            for (var i = 0; i < distance; i++)
             {
                 result.Add(result[index - 1] - Vector2Int.one);
                 index++;
             }
-            for (int i = 0; i < distance; i++)
+            for (var i = 0; i < distance; i++)
             {
                 result.Add(result[index - 1] + Vector2Int.right + Vector2Int.down);
                 index++;
             }
-            for (int i = 0; i < distance; i++)
+            for (var i = 0; i < distance; i++)
             {
                 result.Add(result[index - 1] + Vector2Int.right + Vector2Int.up);
                 index++;
             }
-            for (int i = 0; i < distance - 1; i++)
+            for (var i = 0; i < distance - 1; i++)
             {
                 result.Add(result[index - 1] + Vector2Int.left + Vector2Int.up);
                 index++;

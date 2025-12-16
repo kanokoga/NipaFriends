@@ -64,12 +64,12 @@ namespace NipaFriends.WorldSpaces
                 this.UpdateNeighborIndex(relative, neighborIndex);
                 this.UpdateNeighborInfos(neighborInfos, current, neighborIndex);
 
-                for(int i = 0; i < 4; i++)
+                for(var i = 0; i < 4; i++)
                 {
                     var neighbor = neighborInfos[i];
                     if(neighbor.cost != NoPassCost)
                     {
-                        int newCost = costSoFar[current] + neighbor.cost;
+                        var newCost = costSoFar[current] + neighbor.cost;
                         if(!visited.Contains(neighbor.pos) || newCost < costSoFar[neighbor.pos])
                         {
                             costSoFar[neighbor.pos] = newCost;
@@ -109,7 +109,7 @@ namespace NipaFriends.WorldSpaces
 
         private void UpdateNeighborInfos(NeighborInfo[] neighborInfos, Vector2Int pos, Vector2Int[] neighborIndexs)
         {
-            for(int i = 0; i < 4; i++)
+            for(var i = 0; i < 4; i++)
             {
                 var neighborIndex = neighborIndexs[i];
                 var neighborPos = pos + neighborIndex;

@@ -47,40 +47,40 @@ namespace NipaFriends.Samples
 
         private void OnDrawGizmos()
         {
-            if(meshFaceData != null)
+            if(this.meshFaceData != null)
             {
                 Gizmos.color = Color.red;
-                for(int i = 0; i < meshFaceData.faces.Length; i++)
+                for(var i = 0; i < this.meshFaceData.faces.Length; i++)
                 {
-                    var face = meshFaceData.faces[i];
+                    var face = this.meshFaceData.faces[i];
                     foreach(var n in face.neighborIndex)
                     {
-                        var neighborFace = meshFaceData.faces[n];
+                        var neighborFace = this.meshFaceData.faces[n];
 
-                        Gizmos.DrawLine(face.position + face.normal * gizmoOffset,
-                            neighborFace.position + neighborFace.normal * gizmoOffset);
+                        Gizmos.DrawLine(face.position + face.normal * this.gizmoOffset,
+                            neighborFace.position + neighborFace.normal * this.gizmoOffset);
                     }
                 }
 
-                for(int i = 0; i < meshFaceData.faces.Length; i++)
+                for(var i = 0; i < this.meshFaceData.faces.Length; i++)
                 {
-                    var face = meshFaceData.faces[i];
-                    Gizmos.DrawSphere(face.position + face.normal * gizmoOffset, 0.02f);
+                    var face = this.meshFaceData.faces[i];
+                    Gizmos.DrawSphere(face.position + face.normal * this.gizmoOffset, 0.02f);
                 }
             }
 
             if(this.faces != null)
             {
                 Gizmos.color = Color.green;
-                for(int i = 0; i < this.faces.Count; i++)
+                for(var i = 0; i < this.faces.Count; i++)
                 {
                     var face = this.faces[i];
-                    Gizmos.DrawWireSphere(face.position + face.normal * gizmoOffset, 0.02f);
+                    Gizmos.DrawWireSphere(face.position + face.normal * this.gizmoOffset, 0.02f);
                     if(i < this.faces.Count - 1)
                     {
                         var nextFace = this.faces[i + 1];
-                        Gizmos.DrawLine(face.position + face.normal * gizmoOffset,
-                            nextFace.position + nextFace.normal * gizmoOffset);
+                        Gizmos.DrawLine(face.position + face.normal * this.gizmoOffset,
+                            nextFace.position + nextFace.normal * this.gizmoOffset);
                     }
                 }
             }

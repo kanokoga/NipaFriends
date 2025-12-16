@@ -73,7 +73,7 @@ namespace NipaFriends.CameraMovers
             // *** Look ***
 
             this.verticalRotation += -Input.GetAxis("Mouse Y") * this.lookSpeed;
-            this.verticalRotation = Mathf.Clamp(verticalRotation, -this.verticalLookLimit, this.verticalLookLimit);
+            this.verticalRotation = Mathf.Clamp(this.verticalRotation, -this.verticalLookLimit, this.verticalLookLimit);
             this.face.localRotation = Quaternion.Euler(this.verticalRotation, 0, 0);
             this.body.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * this.lookSpeed, 0);
         }

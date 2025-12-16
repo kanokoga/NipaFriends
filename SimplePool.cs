@@ -11,7 +11,7 @@ namespace NipaFriends
         public SimplePool(System.Func<T> creater, int initialCount)
         {
             this.creater = creater;
-            for (int i = 0; i < initialCount; i++)
+            for (var i = 0; i < initialCount; i++)
             {
                 this.pool.Enqueue(this.CreateObject());
             }

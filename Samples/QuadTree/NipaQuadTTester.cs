@@ -23,7 +23,7 @@ namespace NipaFriends.Samples
         // Start is called before the first frame update
         void Start()
         {
-            this.quadTree = new NipaQuadTree(maxTreeDepth);
+            this.quadTree = new NipaQuadTree(this.maxTreeDepth);
             this.quadTree.DebugHasObjectPerGrid();
         }
 
@@ -44,12 +44,12 @@ namespace NipaFriends.Samples
         {
             this.ClearObject();
             var start = new Vector2(Random.value, Random.value);
-            for(int i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
             {
                 start = start + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 0.5f;
                 var clamped = new Vector2(Mathf.Clamp01(start.x), Mathf.Clamp01(start.y));
                 this.quadTree.SetObject(clamped);
-                points.Add(clamped);
+                this.points.Add(clamped);
             }
             this.ClearTree();
             this.GenerateTree();
@@ -68,8 +68,8 @@ namespace NipaFriends.Samples
         [ContextMenu("SetObject")]
         private void SetObject()
         {
-            this.quadTree.SetObject(normalizedPos);
-            this.points.Add(normalizedPos);
+            this.quadTree.SetObject(this.normalizedPos);
+            this.points.Add(this.normalizedPos);
             this.DebugTree();
         }
 
