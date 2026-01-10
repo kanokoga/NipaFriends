@@ -982,36 +982,36 @@ namespace NipaFriends
         ///[ROLE] : 要素を与えると一つのインデックスを返す
         ///[note] : 要素の値が大きいほど選ばれる確率が高まる
         ///</summary>///
-        public static int RandomIndex(float[] _elements)
+        public static int GetRandomIndex(float[] elements, int elementCount = -1)
         {
-            var sum = 0f;
-            for(var i = 0; i < _elements.Length; i++)
+            if(elementCount < 0)
             {
-                sum += _elements[i];
+                elementCount = elements.Length;
             }
 
-            var v = Random.value * sum;
-            var current = 0f;
-            var result = 0;
-            for(var i = 0; i < _elements.Length; i++)
+            // Calculate the total weight
+            var totalWeight = 0f;
+            for(int i = 0; i < elementCount; i++)
             {
-                current += _elements[i];
+                totalWeight += elements[i];
+            }
 
-                if(v < current && v > current - _elements[i])
+            // Generate a random value between 0 and the total weight
+            var randomValue = Random.value * totalWeight;
+
+            // Iterate through the elements to find the selected index
+            var cumulativeWeight = 0f;
+            for (var i = 0; i < elementCount; i++)
+            {
+                cumulativeWeight += elements[i];
+                if (randomValue <= cumulativeWeight)
                 {
-                    result = i;
-                    //for (int t = i; t >= 0; t--)
-                    //{
-                    //    if (_elements[i] - _elements[t] < Mathf.Epsilon)
-                    //        result = t;
-                    //    else
-                    //        break;
-                    //}
-                    break;
+                    return i;
                 }
             }
 
-            return result;
+            // Fallback (should not be reached if weights are valid)
+            return -1;
         }
 
 
