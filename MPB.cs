@@ -39,6 +39,31 @@ namespace NipaFriends
             this.renderer.SetPropertyBlock(this.mpb);
         }
 
+        public void SetFloat(int shaderPropId, float value)
+        {
+            this.mpb.SetFloat(shaderPropId, value);
+            this.renderer.SetPropertyBlock(this.mpb);
+        }
+
+        public void SetColor(int shaderPropId, Color value)
+        {
+            this.mpb.SetColor(shaderPropId, value);
+            this.renderer.SetPropertyBlock(this.mpb);
+        }
+
+        public void SetVector(int shaderPropId, Vector4 value)
+        {
+            this.mpb.SetVector(shaderPropId, value);
+            this.renderer.SetPropertyBlock(this.mpb);
+        }
+
+        public void SetInt(int shaderPropId, int value)
+        {
+            this.mpb.SetInt(shaderPropId, value);
+            this.renderer.SetPropertyBlock(this.mpb);
+        }
+
+
         public void Dispose()
         {
         }
