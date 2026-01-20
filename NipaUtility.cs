@@ -1014,6 +1014,33 @@ namespace NipaFriends
             return -1;
         }
 
+        ///<summary>
+        ///[ROLE] : 要素を与えると一つのインデックスを返す
+        ///[note] : 要素の値が大きいほど選ばれる確率が高まる
+        ///</summary>
+        public static int GetRandomIndex(List<float> elements)
+        {
+            var totalWeight = 0f;
+            for (int i = 0; i < elements.Count; i++)
+            {
+                totalWeight += elements[i];
+            }
+
+            var randomValue = Random.value * totalWeight;
+
+            var cumulativeWeight = 0f;
+            for (var i = 0; i < elements.Count; i++)
+            {
+                cumulativeWeight += elements[i];
+                if (randomValue <= cumulativeWeight)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
 
         ///<summary>
         ///[ROLE] : 指定範囲以内の整数をランダムで返す
