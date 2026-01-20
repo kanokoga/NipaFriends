@@ -1052,6 +1052,12 @@ namespace NipaFriends
             return new Vector3(x, 0f, z);
         }
 
+      public static Vector3 GetRandomPointInsideCircle(float range)
+      {
+          var point = Random.insideUnitCircle * range;
+          return new Vector3(point.x, 0f, point.y);
+      }
+
         ///<summary>
         ///[ROLE] : 指定範囲以内の整数をランダムで返す
         ///[note] : -
