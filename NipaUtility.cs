@@ -1041,6 +1041,16 @@ namespace NipaFriends
             return -1;
         }
 
+        /// <summary>
+        /// [ROLE] : xz平面上の原点からrangeの半径の円周上のランダムな点を返す
+        /// </summary>
+        public static Vector3 GetRandomPointOnCircle(float range)
+        {
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            float x = Mathf.Cos(angle) * range;
+            float z = Mathf.Sin(angle) * range;
+            return new Vector3(x, 0f, z);
+        }
 
         ///<summary>
         ///[ROLE] : 指定範囲以内の整数をランダムで返す
