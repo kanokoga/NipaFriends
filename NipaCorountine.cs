@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NipaFriends
 {
-    public class NipaCorountine : MonoBehaviour
+    public class NipaCorountine : SingletonMonoBehaviour<NipaCorountine>
     {
         public static NipaCorountine Instance => _instance;
         private static NipaCorountine _instance;
