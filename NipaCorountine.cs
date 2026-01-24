@@ -22,11 +22,36 @@ namespace NipaFriends
 
         public Coroutine StartProcess(IEnumerator process, Coroutine c)
         {
-            if (c != null)
+            if(c != null)
             {
                 this.StopCoroutine(c);
             }
+
             return this.StartCoroutine(process);
+        }
+
+        public void StartLazyAction(System.Action action, float delyay)
+        {
+            this.StopCoroutine(
+                this.LazyProcess(action, new WaitForSeconds(delyay), 1)
+            );
+        }
+
+        public void StartLazyAction(System.Action action, int frameDelay = 1)
+        {
+            this.StopCoroutine(
+                this.LazyProcess(action, new WaitForEndOfFrame(), frameDelay)
+            );
+        }
+
+        private IEnumerator LazyProcess(System.Action action, YieldInstruction delay, int repeat)
+        {
+            for(int i = 0; i < repeat - 1; i++)
+            {
+                yield return delay;
+            }
+
+            action();
         }
     }
 }
