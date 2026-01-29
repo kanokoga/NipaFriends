@@ -27,6 +27,12 @@ namespace NipaFriends
             this.renderer.SetPropertyBlock(this.mpb);
         }
 
+        public void SetTexture( string name, Texture value)
+        {
+            this.mpb.SetTexture(name, value);
+            this.renderer.SetPropertyBlock(this.mpb);
+        }
+
         public void SetInt(string name, int value)
         {
             this.mpb.SetInt(name, value);
@@ -42,6 +48,12 @@ namespace NipaFriends
         public void SetFloat(int shaderPropId, float value)
         {
             this.mpb.SetFloat(shaderPropId, value);
+            this.renderer.SetPropertyBlock(this.mpb);
+        }
+
+        public void SetTexture(int shaderPropId, Texture value)
+        {
+            this.mpb.SetTexture(shaderPropId, value);
             this.renderer.SetPropertyBlock(this.mpb);
         }
 
