@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace NipaFriends.CameraMovers
+namespace NipaFriends
 {
 
     [RequireComponent(typeof(Camera))]
@@ -11,7 +11,7 @@ namespace NipaFriends.CameraMovers
         public float translateSpeed = 1;
         public float zoomSpeed = 5;
 
-        
+
         private void Start()
         {
             this.targetPoint = this.transform.position + Vector3.forward * 10f;
