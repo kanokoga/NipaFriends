@@ -29,11 +29,11 @@ namespace NipaFriends
             this.pool = new ObjectPool<T>(this.CreateObject);
         }
 
-        public T GetObject()
-            => this.pool.GetObject();
+        public T Get()
+            => this.pool.Get();
 
-        public void PoolObject(T obj)
-            => this.pool.PoolObject(obj);
+        public void Return(T obj)
+            => this.pool.Return(obj);
 
         private T CreateObject()
         {

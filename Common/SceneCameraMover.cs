@@ -4,20 +4,21 @@ namespace NipaFriends.CameraMovers
 {
 
     [RequireComponent(typeof(Camera))]
-    public class SceneCameraController : MonoBehaviour
+    public class SceneCameraMover : MonoBehaviour
     {
         public Vector3 targetPoint; // 注視点
         public float rotateSpeed = 10;
         public float translateSpeed = 1;
         public float zoomSpeed = 5;
 
+        
         private void Start()
         {
             this.targetPoint = this.transform.position + Vector3.forward * 10f;
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             var mouseX = Input.GetAxis("Mouse X");
             var mouseY = Input.GetAxis("Mouse Y");
@@ -44,7 +45,7 @@ namespace NipaFriends.CameraMovers
             // ズーム
             if (mouseWheelScroll != 0)
             {
-                var moveWorld = this.transform.forward * mouseWheelScroll * this.zoomSpeed;
+                var moveWorld = this.transform.forward * (mouseWheelScroll * this.zoomSpeed);
 
                 // World XZ平面平行移動
                 if (isShift) moveWorld.y = 0f;

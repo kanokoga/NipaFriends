@@ -15,7 +15,7 @@ namespace NipaFriends
         public ObjectPool(System.Func<T> creationFunc)
           => this.creationFunc = creationFunc;
 
-        public T GetObject()
+        public T Get()
         {
             T obj;
             if (this.pool.Count > 0)
@@ -29,7 +29,7 @@ namespace NipaFriends
             return obj;
         }
 
-        public void PoolObject(T o)
+        public void Return(T o)
         {
             this.pool.Push(o);
         }

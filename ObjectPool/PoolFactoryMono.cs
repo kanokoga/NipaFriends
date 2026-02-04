@@ -22,10 +22,10 @@ namespace NipaFriends
             this.poolFactory = new PoolFactory<MonoBehaviour>(this.transform);
         }
 
-        public virtual MonoBehaviour GetObject()
-            => this.poolFactory.GetObject();
+        public virtual MonoBehaviour Get()
+            => this.poolFactory.Get();
 
-        public virtual void PoolObject(MonoBehaviour obj)
-            => this.poolFactory.PoolObject(obj);
+        public virtual void Return(MonoBehaviour obj)
+            => this.poolFactory.Return(obj);
     }
 }

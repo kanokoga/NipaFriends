@@ -21,7 +21,7 @@ namespace NipaFriends.Samples
         private List<Vector2> points = new List<Vector2>();
 
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             this.quadTree = new NipaQuadTree(this.maxTreeDepth);
             this.quadTree.DebugHasObjectPerGrid();

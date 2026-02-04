@@ -5,8 +5,11 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace SubjectNerd.Utilities
+namespace NipaFriends
 {
+    /// <summary>
+    /// this code is originally from https://github.com/SubjectNerd-Unity/ReorderableInspector
+    /// </summary>
     [CustomEditor(typeof(UnityEngine.Object), true)]
     [CanEditMultipleObjects]
     public class ContextMenuButton : Editor
@@ -19,9 +22,9 @@ namespace SubjectNerd.Utilities
 
             public ContextMenuData(string item)
             {
-                menuItem = item;
-                function = null;
-                validate = null;
+                this.menuItem = item;
+                this.function = null;
+                this.validate = null;
             }
         }
 
@@ -29,51 +32,53 @@ namespace SubjectNerd.Utilities
 
         private void OnEnable()
         {
-            FindContextMenu();
+            this.FindContextMenu();
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            DrawContextMenuButtons();
+            this.DrawContextMenuButtons();
         }
 
         private void FindContextMenu()
         {
-            contextData.Clear();
-            Type targetType = target.GetType();
-            Type contextMenuType = typeof(ContextMenu);
-            foreach (MethodInfo methodInfo in targetType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            this.contextData.Clear();
+            var targetType = this.target.GetType();
+            var contextMenuType = typeof(ContextMenu);
+            foreach(var methodInfo in targetType.GetMethods(BindingFlags.Instance | BindingFlags.Public |
+                                                            BindingFlags.NonPublic))
             {
-                foreach (ContextMenu contextMenu in methodInfo.GetCustomAttributes(contextMenuType, false))
+                foreach(ContextMenu contextMenu in methodInfo.GetCustomAttributes(contextMenuType, false))
                 {
                     var data = new ContextMenuData(contextMenu.menuItem);
-                    if (contextMenu.validate)
+                    if(contextMenu.validate)
                         data.validate = methodInfo;
                     else
                         data.function = methodInfo;
 
-                    contextData[contextMenu.menuItem] = data;
+                    this.contextData[contextMenu.menuItem] = data;
                 }
             }
         }
 
         private void DrawContextMenuButtons()
         {
-            if (contextData.Count == 0) return;
+            if(this.contextData.Count == 0) return;
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Context Menu", EditorStyles.boldLabel);
-            foreach (var kv in contextData)
+            foreach(var kv in this.contextData)
             {
                 bool enabledState = GUI.enabled;
-                bool isEnabled = kv.Value.validate == null || (bool)kv.Value.validate.Invoke(target, null);
+                bool isEnabled = kv.Value.validate == null || (bool)kv.Value.validate.Invoke(this.target, null);
 
                 GUI.enabled = isEnabled;
-                if (GUILayout.Button(kv.Key) && kv.Value.function != null)
+                if(GUILayout.Button(kv.Key) && kv.Value.function != null)
                 {
-                    kv.Value.function.Invoke(target, null);
+                    kv.Value.function.Invoke(this.target, null);
                 }
+
                 GUI.enabled = enabledState;
             }
         }
