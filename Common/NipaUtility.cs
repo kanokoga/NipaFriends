@@ -12,63 +12,56 @@ namespace NipaFriends
     /// </summary>
     public static class NipaUtility
     {
-        #region *** Definitions ***
+        #region *** Definition ***
 
-        /// <summary>
-        /// IDと値のペアを保持する構造体（ソート用）
-        /// </summary>
-        private readonly struct FloatId : IComparable<FloatId>
+        private struct floatId
         {
-            public readonly int Id;
-            public readonly float Value;
-
-            public FloatId(int id, float value)
+            public floatId(int _id, float _value)
             {
-                Id = id;
-                Value = value;
+                this.id = _id;
+                this.value = _value;
             }
 
-            public int CompareTo(FloatId other)
-            {
-                return Value.CompareTo(other.Value);
-            }
+            public int id;
+            public float value;
         }
 
         #endregion
 
-        #region *** Distance & Time (距離と時間) ***
+        #region *** 距離と時間 ***
 
-        /// <summary>
-        /// 指定された座標が指定距離内にあるか判定します（高さ含む）
-        /// </summary>
-        public static bool IsTargetInRange(Vector3 from, Vector3 target, float range)
+        ///<summary>
+        /// [ROLE] : 指定された座標は指定距離内にあるか
+        /// [note] : -
+        ///</summary>
+        public static bool IsTargetInRange(Vector3 _from, Vector3 _target, float _range)
         {
-            return (target - from).sqrMagnitude < (range * range);
+            return (_target - _from).sqrMagnitude < (_range * _range);
         }
 
-        /// <summary>
-        /// 指定された座標が指定距離内にあるか判定します（高さ無視：XZ平面）
-        /// </summary>
-        public static bool IsTargetInRangeHorizontal(Vector3 a, Vector3 b, float range)
+        public static bool IsTargetInRangeHorizonal(Vector3 a, Vector3 b, float sqrRange)
         {
             a.y = 0;
             b.y = 0;
-            return (a - b).sqrMagnitude < (range * range);
+            return (a - b).sqrMagnitude < sqrRange;
         }
 
-        /// <summary>
-        /// 指定速度で移動した場合、目標地点まで何秒かかるかを返します
-        /// </summary>
-        public static float GetTimeToReachTarget(Vector3 from, Vector3 to, float speed)
+
+        ///<summary>
+        /// [ROLE] : 指定の速度（処理ではdeltatimeで移動）で移動した場合指定の座標まで何秒かかるか
+        /// [note] : 回転は無視する
+        ///</summary>
+        public static float GetTimeToReachTarget(Vector3 _from, Vector3 _to, float _speed)
         {
-            if(Mathf.Approximately(speed, 0f)) return float.MaxValue;
-            return (to - from).magnitude / speed;
+            return (_to - _from).magnitude / _speed;
         }
 
-        /// <summary>
-        /// 同一水平面上にいると仮定して二乗距離を返します
-        /// </summary>
-        public static float GetHorizontalSqrDistance(Vector3 a, Vector3 b)
+
+        ///<summary>
+        /// [ROLE] : 同一水平面上にいるとして二乗距離を返す
+        /// [note] : -
+        ///</summary>
+        public static float GetHorizonalSqrDistance(Vector3 a, Vector3 b)
         {
             a.y = b.y;
             return (a - b).sqrMagnitude;
@@ -76,718 +69,1330 @@ namespace NipaFriends
 
         #endregion
 
-        #region *** Angle (角度) ***
+        #region *** 角度 ***
 
-        /// <summary>
-        /// 自身から見てターゲットがどの方角にいるか(0~180) 正面が0度
-        /// </summary>
-        /// <param name="observer">自身のTransform</param>
-        /// <param name="target">ターゲット座標</param>
-        /// <param name="includeAltitude">高さ差を加味するか</param>
-        public static float GetAngleDirectionAbs(Transform observer, Vector3 target, bool includeAltitude = false)
+        ///<summary>
+        /// [ROLE] : 座標が自身から見て何度の方角にいるか(0~180) 正面が０度
+        /// [note] : オプションで高度差を加味
+        ///</summary>
+        public static float GetAngleDirection_Abs(Transform _observer, Vector3 _target, bool isAltitudeInclude = false)
         {
-            var forward = observer.forward;
-            var targetDir = target - observer.position;
+            var dir = _observer.TransformDirection(Vector3.forward);
 
-            if(!includeAltitude)
+            if(!isAltitudeInclude)
             {
-                forward.y = 0;
-                targetDir.y = 0;
+                var pos = _target;
+                pos.y = _observer.position.y;
+                _target = pos;
+
+                if(dir.y > Mathf.Epsilon)
+                {
+                    var posD = dir;
+                    posD.y = 0f;
+                    dir = posD;
+                }
             }
 
-            if(targetDir == Vector3.zero) return 0f;
+            var tgtDir = _target - _observer.position;
 
-            return Vector3.Angle(targetDir, forward);
+
+            var ang = Vector3.Angle(tgtDir, dir);
+
+
+            return ang;
         }
 
-        /// <summary>
-        /// ワールド基準で2点間の角度を返します（0~360）。北（Z+）を0度とします。
-        /// </summary>
-        public static float GetAngleAbsolute(Vector3 from, Vector3 to)
-        {
-            var dir = to - from;
-            dir.y = 0; // 水平角度とするためYを無視
-            if(dir == Vector3.zero) return 0f;
 
-            var angle = Vector3.Angle(Vector3.forward, dir);
-            if(dir.x < 0)
+        ///<summary>
+        /// [ROLE] : 単純にある２点間の角度をワールド基準で返す（0~360）
+        /// [note] : ０時の方向（北）を０とする
+        ///</summary>
+        public static float GetAngle_Absolute(Vector3 _from, Vector3 _to)
+        {
+            var ang = Vector3.Angle(Vector3.forward, _to - _from);
+            if(_to.x < _from.x)
             {
-                angle = 360f - angle;
+                ang = 360f - ang;
             }
 
-            return angle;
+            return ang;
         }
 
-        /// <summary>
-        /// 自身から見てターゲットがどの方角にいるか(-180~180) 正面が0度、左がマイナス
-        /// </summary>
-        public static float GetAngleDirection(Transform observer, Vector3 target, bool includeAltitude = false)
-        {
-            var forward = observer.forward;
-            var targetDir = target - observer.position;
 
-            if(!includeAltitude)
+        ///<summary>
+        /// [ROLE] : 座標が自身から見て何度の方角にいるか(-180~180) 正面が０度
+        /// [note] : オプションで高度差を加味
+        ///</summary>
+        public static float GetAngleDirection(Transform _observer, Vector3 _target, bool isAltitudeInclude = false)
+        {
+            var dir = _observer.TransformDirection(Vector3.forward);
+
+            if(!isAltitudeInclude)
             {
-                forward.y = 0;
-                targetDir.y = 0;
+                var pos = _target;
+                pos.y = _observer.position.y;
+                _target = pos;
+
+                if(dir.y > Mathf.Epsilon)
+                {
+                    var posD = dir;
+                    posD.y = 0f;
+                    dir = posD;
+                }
             }
 
-            if(targetDir == Vector3.zero) return 0f;
+            var tgtDir = _target - _observer.position;
+            var ang = Vector3.Angle(tgtDir, dir);
 
-            // 符号付き角度を計算
-            var axis = includeAltitude ? observer.right : Vector3.up; // 簡易的な軸選定
-            var angle = Vector3.SignedAngle(forward, targetDir, Vector3.up);
-
-            return angle;
-        }
-
-        /// <summary>
-        /// 目標に対して正面を向けているか判定します
-        /// </summary>
-        public static bool IsFaceToTarget(Transform observer, Vector3 targetPos, float limitAngle,
-            bool ignoreHeight = false)
-        {
-            var dir = targetPos - observer.position;
-            if(ignoreHeight)
+            var relative = _observer.InverseTransformPoint(_target);
+            if(relative.x < 0)
             {
-                dir.y = 0;
+                ang = -ang;
             }
 
-            if(dir == Vector3.zero) return true;
-
-            return Vector3.Angle(observer.forward, dir) < limitAngle;
+            return ang;
         }
 
-        /// <summary>
-        /// 基準点から見て地点Aと地点Bがなす角度
-        /// </summary>
-        public static float GetAngleBetween(Vector3 observer, Vector3 posA, Vector3 posB)
+
+        ///<summary>
+        /// [ROLE] : 目標に対して正面を向けているか
+        /// [note] : -
+        ///</summary>
+        public static bool IsFaceToTaget(Transform _observer, Vector3 _tgtPos, float _limitAngle,
+            bool _ignoreHeight = false)
         {
-            return Vector3.Angle(posA - observer, posB - observer);
+            if(_ignoreHeight)
+            {
+                _tgtPos.y = _observer.position.y;
+            }
+
+            return Quaternion.Angle(_observer.rotation, Quaternion.LookRotation(_tgtPos - _observer.position)) <
+                   _limitAngle;
         }
 
-        /// <summary>
-        /// あるベクトルに直交する単位ベクトルを返します (2D)
-        /// </summary>
-        public static Vector2 GetDirectionVertical(Vector2 originalDir)
-        {
-            if(Mathf.Approximately(originalDir.x, 0) && Mathf.Approximately(originalDir.y, 0))
-                return Vector2.zero;
 
-            // (x, y) の垂直ベクトルは (-y, x) または (y, -x)
-            return new Vector2(originalDir.y, -originalDir.x).normalized;
+        ///<summary>
+        /// [ROLE] : 基準点から見て地点Aと地点Bがなす角度は何度か
+        /// [note] : -
+        ///</summary>
+        public static float GetAngleBetween(Vector3 _observer, Vector3 _posA, Vector3 _posB)
+        {
+            return Vector3.Angle((_posA - _observer), (_posB - _observer));
         }
 
-        /// <summary>
-        /// あるベクトルと指定された角度をなす単位ベクトルを返します
-        /// </summary>
-        public static Vector2 GetDirectionAngleToOriginalDir(Vector2 original, float angleDeg)
-        {
-            var rad = angleDeg * Mathf.Deg2Rad;
-            var cos = Mathf.Cos(rad);
-            var sin = Mathf.Sin(rad);
 
-            var norm = original.normalized;
-            return new Vector2(
-                norm.x * cos - norm.y * sin,
-                norm.x * sin + norm.y * cos
-            );
+        ///<summary>
+        /// [ROLE] : あるベクトルに直行する単位ベクトルを返す
+        /// [note] : -
+        ///</summary>
+        public static Vector2 GetDirectionVertical(Vector2 _originalDir)
+        {
+            return new Vector2(1 / _originalDir.x, -1 / _originalDir.y).normalized;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : あるベクトルと指定された角度をなす単位ベクトルを返す
+        /// [note] : -
+        ///</summary>
+        public static Vector2 GetDirectionAngleToOriginalDir(Vector2 _original, float _ang)
+        {
+            _original = _original.normalized;
+            _ang = _ang * Mathf.PI / 180f;
+            return new Vector2(_original.x * Mathf.Cos(_ang) - _original.y * Mathf.Sin(_ang),
+                _original.x * Mathf.Sin(_ang) + _original.y * Mathf.Cos(_ang));
         }
 
         #endregion
 
-        #region *** Position & Geometry (座標と幾何) ***
+        #region *** 座標 ***
 
-        /// <summary>
-        /// 指定地点Aから一番近い、指定地点Bから指定距離離れた地点を返します
-        /// </summary>
-        public static Vector3 GetPositionOffToTarget(Vector3 fromPos, Vector3 targetPos, float dist)
+        // ----- 参照：http://iot-kyoto.com/technical/satoh/hittest-002, http://www5d.biglobe.ne.jp/~tomoya03/shtml/algorithm.html
+        // ----- http://1st.geocities.jp/shift486909/program/program_menu.html
+
+
+        ///<summary>
+        /// [ROLE] : 指定地点Aから一番近い、指定地点Bから指定距離離れた地点を返す
+        /// [note] : -
+        ///</summary>
+        public static Vector3 GetPositionOffToTarget(Vector3 _fromPos, Vector3 _targetPos, float _dist)
         {
-            var dir = (fromPos - targetPos).normalized;
-            return targetPos + dir * dist;
+            var dir = (_fromPos - _targetPos).normalized;
+            return _targetPos + dir * _dist;
         }
 
-        /// <summary>
-        /// 平面とレイの交点を求めます
-        /// </summary>
-        public static Vector3 GetPositionRayHitPlane(Vector3 planePos, Vector3 planeNormal, Vector3 rayOrigin,
+
+        ///<summary>
+        /// [ROLE] : 平面とベクトルの交点
+        /// [note] : -
+        ///</summary>
+        public static Vector3 GetPositionRayHitPlane(Vector3 planePos, Vector3 planeNormalDir, Vector3 rayStartPos,
             Vector3 rayDir)
         {
-            var denom = Vector3.Dot(planeNormal, rayDir);
-            if(Mathf.Abs(denom) < Mathf.Epsilon) return rayOrigin; // 平行の場合
-
-            var t = Vector3.Dot(planeNormal, planePos - rayOrigin) / denom;
-            return rayOrigin + rayDir * t;
+            return rayStartPos + ((Vector3.Dot(planeNormalDir, planePos) - Vector3.Dot(planeNormalDir, rayStartPos)) /
+                                  (Vector3.Dot(planeNormalDir, rayDir))) * rayDir;
         }
 
-        /// <summary>
-        /// 線分(from-goal)上で、中心点(center)から指定距離(dist)にある地点を返します
-        /// </summary>
-        public static bool TryGetPositionOffToTarget(Vector3 posFrom, Vector3 posGoal, Vector3 posCenter, float dist,
-            out Vector3 result)
-        {
-            result = posFrom;
 
-            // 中心から線分への垂線の足
-            if(!GetPositionOnLineFromPoint(posFrom, posGoal, posCenter, out var o))
+        ///<summary>
+        /// [ROLE] : 線分FG上でかつ、指定地点Bから指定距離離れた地点を返す
+        /// [note] : http://homepage1.nifty.com/gfk/circle-line.htm
+        ///</summary>
+        public static bool GetPositionOffToTarget(Vector3 _posFrom, Vector3 _posGoal, Vector3 _posCenter, float _dist,
+            out Vector3 _result)
+        {
+            _result = _posFrom;
+
+            Vector3 o;
+            if(!GetPositionOnLineFromPoint(_posFrom, _posGoal, _posCenter, out o)) //中心から線分への垂線の足
             {
                 return false;
             }
 
-            var distSqr = (dist * dist) - (o - posCenter).sqrMagnitude;
-            if(distSqr < 0) return false;
+            var distSqr = _dist * _dist - (o - _posCenter).sqrMagnitude;
+            Debug.Log(distSqr);
+            if(distSqr < 0)
+            {
+                return false;
+            }
 
-            var offset = Mathf.Sqrt(distSqr);
-
-            // 2点考えられるが、Goalに近い方かFromに近い方かなど仕様による。
-            // 元のコードは GetPositionBetweenDist を呼んでいるが、どの方向か不明瞭なため、
-            // ここでは元のロジックを尊重しつつ整理。
-            // 元コードの GetPositionBetweenDist は "FromからBに向かって dist 離れた点" を返す関数。
-            // しかしここの distSqr から求めた offset は「垂線の足からの距離」であるはず。
-            // 意図が読み取りにくいため、単純な幾何計算として実装し直します。
-
-            // 垂線の足から、線分に沿って offset 分ずらした位置が候補。
-            // ここでは簡易的に「交差判定あり」として垂線の足を返します（必要に応じて拡張してください）
-            result = o;
+            var dist = Mathf.Pow(distSqr, 0.5f);
+            _result = GetPositionBetweenDist(_posFrom, _posGoal, dist);
             return true;
         }
 
-        /// <summary>
-        /// 地点Aと地点Bを結ぶ線上で地点Aから指定距離離れた地点を返します
-        /// </summary>
-        public static Vector3 GetPositionFromAtoB(Vector3 posA, Vector3 posB, float distFromA)
+
+        ///<summary>
+        /// [ROLE] : 地点Aと地点Bを結ぶ線上で地点Aから指定距離離れた地点を返す
+        /// [note] : -
+        ///</summary>
+        public static Vector3 GetPositionBetweenDist(Vector3 _posA, Vector3 _posB, float _distFromAtoB)
         {
-            var dir = (posB - posA).normalized;
-            return posA + dir * distFromA;
+            var dir = (_posB - _posA).normalized;
+            return _posA + dir * _distFromAtoB;
         }
 
-        /// <summary>
-        /// 指定された地点から指定半径内にある座標をランダムで返します（XZ平面）
-        /// </summary>
-        public static Vector3 GetPositionRandomInRange(Vector3 origin, float range)
+
+        ///<summary>
+        /// [ROLE] : 指定された地点から指定距離内にある座標をランダムで返す
+        /// [note] : -
+        ///</summary>
+        public static Vector3 GetPositionRandomInRange(Vector3 _origin, float _range)
         {
-            var delta = Random.insideUnitCircle * range;
-            return origin + new Vector3(delta.x, 0f, delta.y);
+            var delta = Random.insideUnitCircle * _range;
+            var result = _origin + new Vector3(delta.x, 0f, delta.y);
+            return result;
         }
 
-        /// <summary>
-        /// 指定速度で現在の進路を維持した場合、指定時間後に到達する座標
-        /// </summary>
-        public static Vector3 GetPositionInFuture(Transform mover, float speed, float duration)
+
+        ///<summary>
+        /// [ROLE] : 指定の速度で現在の進路を維持した場合、何秒後にどこに到達しているか
+        /// [note] :
+        ///</summary>
+        public static Vector3 GetPositonInFuture(Transform _mover, float _speed, float _duration)
         {
-            return mover.position + mover.forward * speed * duration;
+            return _mover.position + _mover.forward * _speed * _duration;
         }
 
-        /// <summary>
-        /// 座標が指定多角形の内側にあるか判定します（Ray Casting法）
-        /// </summary>
-        public static bool IsInsidePolygon(Vector2 pos, List<Vector2> vertices)
-        {
-            if(vertices == null || vertices.Count < 3) return false;
 
-            var inside = false;
-            var j = vertices.Count - 1;
-            for(var i = 0; i < vertices.Count; i++)
+        ///<summary>
+        /// [ROLE] : 指定の速度で現在の進路を維持した場合、何秒後にどこに到達しているか
+        /// [note] :
+        ///</summary>
+        public static Vector3 GetPositonInFuture(Vector3 position, Quaternion rotation, float _speed, float _duration)
+        {
+            return position; // + _mover.forward * _speed * _duration;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 与えれた座標から単ベクトル方向に指定距離はなれた座標を返す
+        /// [note] : -
+        ///</summary>
+        public static Vector3 GetPositionDirectionTo(Vector3 _original, Vector3 _dir, float _dist)
+        {
+            return _original + _dir * _dist;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 座標が指定多角形内の外か内か
+        /// [note] : http://www.hiramine.com/programming/graphics/2d_ispointinpolygon.html
+        /// レイが多角形の辺を何回横切るかを数え、偶数回横切るとき、点は多角形の外側、奇数回横切るとき、点は多角形の内側と判定
+        ///</summary>
+        public static bool IsInsidePolygon(Vector2 pos, List<Vector2> vertexs, float rayLength = 100)
+        {
+            var crossedCount = 0;
+            var rayEnd = Vector2.right * rayLength + pos;
+
+            for(var i = 0; i < vertexs.Count; i++)
             {
-                if((vertices[i].y > pos.y) != (vertices[j].y > pos.y) &&
-                   (pos.x <
-                    (vertices[j].x - vertices[i].x) * (pos.y - vertices[i].y) / (vertices[j].y - vertices[i].y) +
-                    vertices[i].x))
+                if(IsLineCross(pos, rayEnd, vertexs[i], vertexs[i == vertexs.Count - 1 ? 0 : i + 1]))
                 {
-                    inside = !inside;
+                    crossedCount++;
                 }
+            }
 
-                j = i;
+            return crossedCount % 2 != 0;
+        }
+
+        public static bool IsInsidePolygon(Vector2 pos, List<Vector2> vertexs, float noise, float rayLength)
+            => IsInsidePolygon(pos, vertexs.Select(v => v + Random.insideUnitCircle * noise).ToList(), rayLength);
+
+        public static Vector2 RotatePoint(Vector2 target, Vector2 rotNormarized)
+        {
+            return new Vector2(target.x * rotNormarized.x - target.y * rotNormarized.y,
+                target.x * rotNormarized.y + target.y * rotNormarized.x);
+        }
+
+        public static bool IsPointInPolygon(Vector2 point, List<Vector2> polygon)
+        {
+            int polygonLength = polygon.Count, i = 0;
+            var inside = false;
+            // x, y for tested point.
+            float pointX = point.x, pointY = point.y;
+            // start / end point for the current polygon segment.
+            float startX, startY, endX, endY;
+            var endPoint = polygon[polygonLength - 1];
+            endX = endPoint.x;
+            endY = endPoint.y;
+            while(i < polygonLength)
+            {
+                startX = endX;
+                startY = endY;
+                endPoint = polygon[i++];
+                endX = endPoint.x;
+                endY = endPoint.y;
+                //
+                inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
+                          && /* if so, test if it is under the segment */
+                          ((pointX - endX) < (pointY - endY) * (startX - endX) / (startY - endY));
             }
 
             return inside;
         }
 
-        /// <summary>
-        /// ベクトルXはベクトルAとベクトルBの間にあるか (2D)
-        /// </summary>
-        public static bool IsVectorInside(Vector2 x, Vector2 a, Vector2 b)
+        public static bool IsBetween(Vector3 A, Vector3 B, Vector3 C)
         {
-            var crossAB = Cross(a, b);
-            var crossAX = Cross(a, x);
-            var crossXB = Cross(x, b); // Note: Original logic used XB checks
+            var AB = B - A;
+            var AC = C - A;
 
-            // 元のロジックを尊重：ABとAXの符号、BAとBXの符号をチェック
-            if(crossAB * crossAX < 0) return false;
+            var t = Vector3.Dot(AC, AB) / Vector3.Dot(AB, AB);
 
-            var crossBA = -crossAB; // Cross(b, a)
-            var crossBX = Cross(b, x);
+            return (0f <= t) && (t <= 1f);
+        }
 
-            if(crossBA * crossBX < 0) return false;
+
+        ///<summary>
+        /// [ROLE] : ベクトルXはベクトルAとベクトルBの間にあるか
+        /// [note] : https://stackoverflow.com/questions/13640931/how-to-determine-if-a-vector-is-between-two-other-vectors
+        ///</summary>
+        public static bool IsVectorInside(Vector2 X, Vector2 A, Vector2 B)
+        {
+            var crossAB = A.x * B.y - B.x * A.y;
+            var crossAX = A.x * X.y - X.x * A.y;
+
+            if(crossAB * crossAX < 0)
+            {
+                return false;
+            }
+
+            var crossBA = B.x * A.y - A.x * B.y;
+            var crossBX = B.x * X.y - X.x * B.y;
+
+            if(crossBA * crossBX < 0)
+            {
+                return false;
+            }
 
             return true;
         }
 
-        /// <summary>
-        /// 線分ABに点Cから垂直に下ろした線分の交点（垂線の足）を求めます。
-        /// </summary>
-        /// <param name="result">交点が線分上にある場合の座標</param>
-        /// <returns>交点が線分AB上にあるならtrue</returns>
-        public static bool GetPositionOnLineFromPoint(Vector3 posA, Vector3 posB, Vector3 posC, out Vector3 result)
-        {
-            var a = posA.ToV2_XZ();
-            var b = posB.ToV2_XZ();
-            var c = posC.ToV2_XZ();
 
-            var ab = b - a;
-            if(ab.sqrMagnitude < Mathf.Epsilon)
+        ///<summary>
+        /// [ROLE] : XからAへのベクトルとXからBへのベクトルの内積
+        /// [note] :１だと同じ方向
+        ///</summary>
+        public static float GetDot(Vector2Int X, Vector2Int A, Vector2Int B)
+        {
+            var XA = new Vector2(A.x - X.x, A.y - X.y).normalized;
+            var XB = new Vector2(B.x - X.x, B.y - X.y).normalized;
+            return Vector2.Dot(XA, XB);
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 線分ABに点Cから垂直に下ろした線分の交点を求める.高度は位置にかかわらず点Aと同じ
+        /// [note] : http://www.sousakuba.com/Programming/gs_near_pos_on_line.html
+        /// 交点が線分上にあるなら正を返す
+        ///</summary>
+        public static bool GetPositionOnLineFromPoint(Vector3 _posA, Vector3 _posB, Vector3 _posC, out Vector3 result)
+        {
+            var posA = ConvertV3ToV2_IgnoreY(_posA);
+            var posB = ConvertV3ToV2_IgnoreY(_posB);
+            var posC = ConvertV3ToV2_IgnoreY(_posC);
+
+            var v = (posB - posA).normalized;
+            var v_AC = posC - posA;
+            var dist = Vector2.Dot(v, v_AC);
+
+            result = _posA + ConvertV2ToV3(v, 0f) * dist;
+
+            if(dist < 0 || dist * dist > (posB - posA).sqrMagnitude)
             {
-                result = posA;
                 return false;
             }
-
-            var ac = c - a;
-            var t = Vector2.Dot(ac, ab) / Vector2.Dot(ab, ab);
-
-            // 線分上にあるか判定 (0 <= t <= 1)
-            var onSegment = t >= 0f && t <= 1f;
-
-            // 線分外でも計算結果は返す（クランプしない）
-            var res2D = a + ab * t;
-            result = res2D.ToV3_Y(posA.y);
-
-            return onSegment;
-        }
-
-        /// <summary>
-        /// 2つの線分の交差判定と交点取得
-        /// </summary>
-        public static bool GetCrossPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2, out Vector2 result)
-        {
-            result = Vector2.zero;
-            var b = a2 - a1;
-            var d = b2 - b1;
-            var det = Cross(b, d);
-
-            if(Mathf.Abs(det) < Mathf.Epsilon) return false; // 平行
-
-            var c = b1 - a1;
-            var t = Cross(c, d) / det;
-            var u = Cross(c, b) / det;
-
-            if(t >= 0 && t <= 1 && u >= 0 && u <= 1)
+            else
             {
-                result = a1 + b * t;
                 return true;
             }
-
-            return false;
         }
 
-        /// <summary>
-        /// ベジェ曲線上の点を取得します
-        /// </summary>
-        public static Vector2[] GetPointsOnBezier(Vector2[] ctrlPoints, int segments)
+        public static bool GetCrossPoint(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, out Vector3 result)
         {
-            if(ctrlPoints.Length == 0) return new Vector2[0];
-            if(segments < 2) return new[] { ctrlPoints[0], ctrlPoints[ctrlPoints.Length - 1] };
+            var result2 = Vector2.zero;
+            float ratio;
+            var found = GetCrossPoint(a1.ToV2_XZ(), a2.ToV2_XZ(), b1.ToV2_XZ(), b2.ToV2_XZ(), out result2, out ratio);
+            result = result2.ToV3_Y(Mathf.Lerp(a1.y, a2.y, ratio));
+            return found;
+        }
 
-            var result = new Vector2[segments];
-            var n = ctrlPoints.Length - 1;
+        public static bool GetCrossPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2, out Vector2 result)
+        {
+            var dummy = 0f;
+            return GetCrossPoint(a1, a2, b1, b2, out result, out dummy);
+        }
 
-            for(var i = 0; i < segments; i++)
+
+        ///<summary>
+        /// [ROLE] : ２つの線分の交点
+        /// [note] : -
+        ///</summary>
+        public static bool GetCrossPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2, out Vector2 result,
+            out float ratio)
+        {
+            ratio = 0f;
+            var v = b1 - a1;
+            var va = a2 - a1;
+            var vb = b2 - b1;
+
+            var t1 = Cross(v, vb) / Cross(va, vb);
+            var t2 = Cross(v, va) / Cross(va, vb);
+
+            result = a1;
+            if(t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1)
             {
-                var t = i / (float)(segments - 1);
-                result[i] = CalculateBezierPoint(t, ctrlPoints, n);
+                result = Vector2.Lerp(a1, a2, t1);
+                ratio = t1;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        ///<summary>
+        /// [ROLE] : 観察者から見た角度で観察者から指定距離離れた場所の座標を返す(-180~180)
+        /// [note] : 高度は観察者と同じ
+        ///</summary>
+        public static Vector3 GetPositionAngleOffsetFrom(Transform _observer, float _angle, float _dist)
+        {
+            var tgtDir = _observer.TransformDirection(Vector3.forward);
+            var resultVector = Vector3.zero;
+            var angInRagian = _angle * Mathf.PI / 180f;
+
+            resultVector.y = 0f;
+            resultVector.x = tgtDir.x * Mathf.Cos(angInRagian) - tgtDir.z * Mathf.Sin(-angInRagian);
+            resultVector.z = tgtDir.x * Mathf.Sin(-angInRagian) + tgtDir.z * Mathf.Cos(angInRagian);
+
+            return resultVector * _dist + _observer.position;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : ２つの座標のうち近い方を返す
+        /// [note] : -
+        ///</summary>
+        public static Vector3 GetPositionNearest(Vector3 _from, Vector3 _goalA, Vector3 _goalB)
+        {
+            if((_goalA - _from).sqrMagnitude > (_goalB - _from).sqrMagnitude)
+            {
+                return _goalB;
+            }
+            else
+            {
+                return _goalA;
+            }
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 与えられた制御点からベジェ曲線を作成し、与えられた数分の線上の点を返す
+        /// [note] : http://qiita.com/hart_edsf/items/cec5af01a70b62ca93f2, http://dixq.net/g/s_02.html
+        /// http://www.dfx.co.jp/dftalk/?p=10576
+        ///</summary>
+        public static Vector2[] GetPointOnBezier(Vector2[] _ctrlPoints, int _resultNumber)
+        {
+            //---------------------------------- 先に係数を計算する
+
+            var cpLength = _ctrlPoints.Length;
+            var funcPara = GetPascalTriangle(_ctrlPoints.Length);
+
+            //---------------------------------- ベジェ曲線を計算する
+
+            var delta = 1f / (_resultNumber - 1);
+            var para = 0f;
+            var paraO = 0f;
+            var result = new Vector2[_resultNumber];
+
+            for(var r = 1; r < _resultNumber - 1; r++)
+            {
+                para = delta * r;
+                paraO = 1f - para;
+                var p = Vector2.zero;
+                for(var i = 0; i < cpLength; i++)
+                {
+                    p.x += funcPara[i] * Mathf.Pow(paraO, cpLength - 1 - i) * Mathf.Pow(para, i) * _ctrlPoints[i].x;
+                    p.y += funcPara[i] * Mathf.Pow(paraO, cpLength - 1 - i) * Mathf.Pow(para, i) * _ctrlPoints[i].y;
+                }
+
+                result[r] = p;
             }
 
+            result[0] = _ctrlPoints[0];
+            result[_resultNumber - 1] = _ctrlPoints[cpLength - 1];
             return result;
         }
 
-        private static Vector2 CalculateBezierPoint(float t, Vector2[] p, int n)
+
+        ///<summary>
+        /// [ROLE] : 与えられた座標群と目的地から横隊陣形の座標を返す
+        /// [note] : -
+        ///</summary>
+        public static Vector3[] GetFormation_Line(Vector3[] _positions, Vector3 _desti, float _interval,
+            bool _sort = false)
         {
-            // バーンスタイン基底関数を用いた計算よりも、ド・カステリョのアルゴリズムの方が数値的に安定する場合があるが、
-            // ここでは元のロジック（パスカルの三角形係数利用）を維持しつつ最適化
-            // ただし、計算コストを考えると汎用的な再帰計算か、少数の制御点ならハードコードが望ましい。
-
-            // 簡易実装（3次ベジェまで対応の汎用型）
-            var ret = Vector2.zero;
-            for(var i = 0; i <= n; i++)
-            {
-                var coef = BinomialCoefficient(n, i);
-                ret += coef * Mathf.Pow(1 - t, n - i) * Mathf.Pow(t, i) * p[i];
-            }
-
-            return ret;
-        }
-
-        private static long BinomialCoefficient(int n, int k)
-        {
-            if(k < 0 || k > n) return 0;
-            if(k == 0 || k == n) return 1;
-            if(k > n / 2) k = n - k;
-
-            long res = 1;
-            for(var i = 1; i <= k; ++i)
-            {
-                res = res * (n - i + 1) / i;
-            }
-
-            return res;
-        }
-
-        /// <summary>
-        /// 横隊陣形（ラインフォーメーション）の座標を計算します
-        /// </summary>
-        public static Vector3[] GetFormationLine(Vector3[] currentPositions, Vector3 destination, float interval,
-            bool sort = false)
-        {
-            var count = currentPositions.Length;
-            if(count == 0) return new Vector3[0];
-
-            // 重心の計算
             var center = Vector3.zero;
-            foreach(var pos in currentPositions) center += pos;
-            center /= count;
-
-            // 進行方向の計算
-            var dir = (destination - center);
-            dir.y = 0;
-            if(dir == Vector3.zero) dir = Vector3.forward;
-            dir.Normalize();
-
-            // 右方向ベクトル（横隊の並ぶ方向）
-            var right = new Vector3(dir.z, 0f, -dir.x);
-
-            var width = interval * (count - 1);
-            var startX = -width / 2f;
-
-            var results = new Vector3[count];
-
-            // 基準位置の生成
-            for(var i = 0; i < count; i++)
+            foreach(var item in _positions)
             {
-                results[i] = destination + right * (startX + interval * i);
+                center += item;
             }
 
-            if(!sort) return results;
+            center /= _positions.Length;
+            var delta = _desti - center;
+            delta.y = 0f;
+            var dir = (delta).normalized;
+            var dirNorm = new Vector3(dir.z, 0f, -dir.x);
 
-            // ソート: フォーメーションの並び順に近いユニットを割り当てる
-            // 投影位置（rightベクトル上の位置）でソート
-            var unitProjections = new FloatId[count];
-            for(var i = 0; i < count; i++)
+            var formationWidthHalf = _interval * (_positions.Length - 1) / 2f;
+            var results = new Vector3[_positions.Length];
+
+            for(var i = 0; i < results.Length; i++)
             {
-                // 右方向ベクトルとの内積で相対位置を数値化
-                var proj = Vector3.Dot(currentPositions[i] - center, right);
-                unitProjections[i] = new FloatId(i, proj);
+                results[i] = _desti + dirNorm * (formationWidthHalf - _interval * i);
             }
 
-            // 内積値が小さい（左側）順にソート
-            Array.Sort(unitProjections);
-
-            var sortedResults = new Vector3[count];
-            for(var i = 0; i < count; i++)
+            if(!_sort)
             {
-                // i番目の位置には、i番目に左側にいるユニットの元のインデックスの結果を入れる...のではなく、
-                // 「左端の目的地」には「左端にいるユニット」を割り当てる
-
-                // results は既に左から右へ並んでいる
-                // unitProjections[i].Id は i番目に左にいるユニットのID
-                // そのユニットの新しい位置は results[i] になるべき
-
-                // しかし戻り値は「元の配列のインデックスに対応する新しい座標」である必要がある場合が多い。
-                // ここでは「resultsSorted[元のID] = 新しい座標」の形式にする。
-
-                sortedResults[unitProjections[i].Id] = results[i];
+                return results;
             }
 
-            return sortedResults;
+            ;
+
+            //---------------------------------- ソートする場合
+            //http://marupeke296.com/DXG_No19_ViweBCoordinate.html
+
+            // var ang = Vector3.Angle(dir, Vector3.forward) * Mathf.PI / 180f;
+            // var cos = Mathf.Cos(ang);
+            // var sin = Mathf.Sin(ang);
+
+            var cos = 1f / dir.x;
+            var sin = 1f / dir.z;
+
+            ///<summary> フォーメーション座標系からみたもとの点の横上での位置 </summary>
+            var posXOnFormationWorld = new floatId[_positions.Length];
+
+            for(var i = 0; i < posXOnFormationWorld.Length; i++)
+            {
+                posXOnFormationWorld[i] = new floatId(i, _positions[i].x * cos - _positions[i].z * sin);
+            }
+
+            if(sin > 0f && cos > 0f || sin < 0f && cos < 0f)
+            {
+                posXOnFormationWorld = posXOnFormationWorld.OrderByDescending(v => v.value).ToArray();
+            }
+            else
+            {
+                posXOnFormationWorld = posXOnFormationWorld.OrderBy(v => v.value).ToArray();
+            }
+
+            var resultsSorted = new Vector3[_positions.Length];
+
+            for(var i = 0; i < resultsSorted.Length; i++)
+            {
+                resultsSorted[posXOnFormationWorld[i].id] = results[i];
+            }
+
+            return resultsSorted;
         }
+
+
+        ///<summary>
+        /// [ROLE] : Bsprine関数を描く
+        /// [note] : http://1st.geocities.jp/shift486909/program/Interpolation2.html
+        /// http://maicommon.ciao.jp/ss/Jalgo/Bspline/index.htm
+        /// http://d.hatena.ne.jp/Zellij/20120705/p1
+        ///</summary>
+        public static float GetVector3Dot(Vector3 origin, Vector3 a, Vector3 b)
+            => Vector3.Dot((a - origin).normalized, (b - origin).normalized);
+
+        public static bool IsBothFront(Vector3 origin, Vector3 a, Vector3 b)
+            => GetVector3Dot(origin, a, b) > 0f;
 
         #endregion
 
-        #region *** Utilities (その他) ***
+        #region *** その他 ***
 
-        /// <summary>
-        /// 配列のコピー（サイズ不一致ならリサイズ）
-        /// </summary>
-        public static void CopyArray<T>(T[] source, ref T[] target)
+        public static void CopyArray<T>(T[] origin, ref T[] target)
         {
-            if(target == null || target.Length != source.Length)
+            if(target == null || target.Length != origin.Length)
             {
-                target = new T[source.Length];
+                target = new T[origin.Length];
             }
 
-            Array.Copy(source, target, source.Length);
-        }
-
-        /// <summary>
-        /// ほぼ等しいか判定
-        /// </summary>
-        public static bool IsEqual(float a, float b, float threshold = 0.1f)
-        {
-            return Mathf.Abs(a - b) < threshold;
-        }
-
-        /// <summary>
-        /// Texture2Dを指定色で着色します
-        /// </summary>
-        public static void TintTexture(Texture2D tex, Color color)
-        {
-            var pixels = tex.GetPixels();
-            for(var i = 0; i < pixels.Length; i++)
+            for(var i = 0; i < origin.Length; i++)
             {
-                pixels[i] *= color;
+                target[i] = origin[i];
+            }
+        }
+
+        public static bool IsEquel(float a, float b)
+            => Mathf.Abs(a - b) < 0.1f;
+
+
+        ///<summary>
+        ///[ROLE] : モノクロのテクスチャをカラーにする
+        ///[note] : -
+        ///</summary>///
+        public static void ColorTexture(Texture2D _tex, Color _color)
+        {
+            for(var x = 0; x < _tex.width; x++)
+            {
+                for(var z = 0; z < _tex.height; z++)
+                {
+                    var c = _tex.GetPixel(x, z).r * _color;
+                    _tex.SetPixel(x, z, c);
+                }
             }
 
-            tex.SetPixels(pixels);
+            _tex.Apply();
+        }
+
+
+        ///<summary>
+        ///[ROLE] : テクスチャを加算する
+        ///[note] : -
+        ///</summary>///
+        public static Texture2D CombineTexture2d(Texture2D _texA, Texture2D _texB)
+        {
+            var tex = new Texture2D(_texA.width, _texA.height);
+
+            for(var x = 0; x < _texA.width; x++)
+            {
+                for(var z = 0; z < _texA.height; z++)
+                {
+                    var c = _texA.GetPixel(x, z) + _texB.GetPixel(x, z);
+                    tex.SetPixel(x, z, c);
+                }
+            }
+
             tex.Apply();
+            return tex;
         }
 
-        /// <summary>
-        /// 2つのテクスチャを加算合成して新しいテクスチャを返します
-        /// </summary>
-        public static Texture2D CombineTexture(Texture2D texA, Texture2D texB)
+        /////////////////////////////////////////////////////////////////
+        ///<summary>
+        ///[ROLE] : 子ども化し、位置とスケールを０００、１１１にする
+        ///[note] : 任意のスケールも設定可能
+        ///</summary>
+        public static void SetParent(Transform _parent, Transform _cild, float _scale = 1f)
         {
-            if(texA.width != texB.width || texA.height != texB.height)
+            _cild.transform.SetParent(_parent);
+            _cild.localPosition = Vector3.zero;
+            _cild.localScale = Vector3.one * _scale;
+        }
+
+
+        ///<summary>
+        ///[ROLE] : カラーの透明度を変更する
+        ///[note] : -
+        ///</summary>///
+        static public Color ChangeColorAlpha(Color _coloer, float _alpha)
+        {
+            return new Color(_coloer.r, _coloer.g, _coloer.b, _alpha);
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 数値が指定範囲内に収まっているか
+        /// [note] : -
+        ///</summary>
+        public static bool IsValueWithinRange(float _value, float _min, float _max)
+        {
+            return _value >= _min && _value <= _max;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 数値が指定範囲内に収まっているか
+        /// [note] : -
+        ///</summary>
+        public static bool IsValueWithinRange(int _value, int _min, int _max)
+        {
+            return _value >= _min && _value <= _max;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : パスカルの三角形を計算する
+        /// [note] : _level = 0 ~ レベル０で1が返る。
+        ///</summary>
+        public static int[] GetPascalTriangle(int _level)
+        {
+            var temp = new int[_level];
+            var result = new int[_level];
+
+            for(var i = 0; i < result.Length; i++)
             {
-                Debug.LogWarning("Texture sizes do not match.");
-                return null;
+                temp[i] = 1;
+                result[i] = 1;
             }
 
-            var result = new Texture2D(texA.width, texA.height);
-            var pixelsA = texA.GetPixels();
-            var pixelsB = texB.GetPixels();
-            var pixelsResult = new Color[pixelsA.Length];
-
-            for(var i = 0; i < pixelsA.Length; i++)
+            for(var i = 1; i < _level - 1; i++)
             {
-                pixelsResult[i] = pixelsA[i] + pixelsB[i];
+                //Debug.Log("level" + i);
+                for(var v = 1; v < i + 1; v++)
+                {
+                    result[v] = temp[v - 1] + temp[v];
+                }
+
+                for(var v = 1; v < i + 1; v++)
+                {
+                    temp[v] = result[v];
+                }
             }
 
-            result.SetPixels(pixelsResult);
-            result.Apply();
             return result;
         }
 
-        /// <summary>
-        /// 親子関係を設定し、ローカル座標とスケールをリセットします
-        /// </summary>
-        public static void SetParent(Transform parent, Transform child, float scale = 1f)
-        {
-            child.SetParent(parent);
-            child.localPosition = Vector3.zero;
-            child.localRotation = Quaternion.identity; // 回転もリセットするのが一般的
-            child.localScale = Vector3.one * scale;
-        }
 
-        /// <summary>
-        /// カラーのアルファ値を変更した新しいカラーを返します
-        /// </summary>
-        public static Color ChangeColorAlpha(Color color, float alpha)
+        ///<summary>
+        /// [ROLE] : 彼我の間に障害物がないか
+        /// [note] : -
+        ///</summary>
+        public static bool IsClearToTarget(Vector3 _from, Transform _target, float _maxDist = 10000f)
         {
-            color.a = alpha;
-            return color;
-        }
-
-        /// <summary>
-        /// ターゲットとの間に遮蔽物がないか判定します
-        /// </summary>
-        public static bool IsClearToTarget(Vector3 from, Transform target, float maxDist = 10000f,
-            int layerMask = Physics.DefaultRaycastLayers)
-        {
-            var dir = target.position - from;
-            // ターゲット自身にヒットさせるため、少し手前からではなく、ターゲットまでの距離より少し短くレイを飛ばす
-            var dist = dir.magnitude;
-            if(dist > maxDist) return false;
-
-            if(Physics.Raycast(from, dir, out var hit, dist, layerMask))
+            var isClear = false;
+            var dir = _target.position + Vector3.up * 0.5f - _from;
+            var ray = new Ray(_from, dir);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit, _maxDist))
             {
-                // ヒットしたのがターゲット自身、あるいはその親などであればクリアとみなす
-                if(hit.transform == target || hit.transform.IsChildOf(target))
+                if(hit.transform == _target)
                 {
-                    return true;
+                    isClear = true;
                 }
-
-                return false; // 障害物に当たった
             }
 
-            return true; // 何にも当たらなかった＝遮蔽物なし（ターゲットも判定外距離ならここに来るが、ロジック依存）
+            return isClear;
         }
 
-        /// <summary>
-        /// 2次元クロス積（外積のZ成分）
-        /// </summary>
-        public static float Cross(Vector2 v1, Vector2 v2)
+        public static bool IsLineCross(Vector3 _lineAStart, Vector3 _lineAEnd, Vector3 _lineBStart, Vector3 _lineBEnd)
+            => IsLineCross(_lineAStart.ToV2_XZ(), _lineAEnd.ToV2_XZ(), _lineBStart.ToV2_XZ(), _lineBEnd.ToV2_XZ());
+
+
+        ///<summary>
+        /// [ROLE] : ２つの線分は交差するか
+        /// [note] : http://marupeke296.com/COL_2D_No10_SegmentAndSegment.html
+        ///</summary>
+        public static bool IsLineCross(Vector2 _lineAStart, Vector2 _lineAEnd, Vector2 _lineBStart, Vector2 _lineBEnd)
         {
-            return v1.x * v2.y - v1.y * v2.x;
-        }
+            var v = _lineBStart - _lineAStart;
+            var v1 = _lineAEnd - _lineAStart;
+            var v2 = _lineBEnd - _lineBStart;
 
-        /// <summary>
-        /// 重み付き抽選：インデックスを返します
-        /// </summary>
-        public static int GetRandomIndex(IList<float> weights)
-        {
-            if(weights == null || weights.Count == 0) return -1;
-
-            var totalWeight = 0f;
-            foreach(var w in weights) totalWeight += w;
-
-            var randomValue = Random.value * totalWeight;
-            var cumulative = 0f;
-
-            for(var i = 0; i < weights.Count; i++)
+            var t2 = Cross(v, v1) / Cross(v1, v2);
+            if(!IsValueWithinRange(t2, 0f, 1f))
             {
-                cumulative += weights[i];
-                if(randomValue <= cumulative)
+                return false;
+            }
+
+            var t1 = Cross(v, v2) / Cross(v1, v2);
+            if(!IsValueWithinRange(t1, 0f, 1f))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+        ///<summary>
+        ///[ROLE] : カメラのレイヤーを設定する
+        ///[note] : -
+        ///</summary>///
+        public static void SetCameraLayer(Camera _cam, int _layerIndex)
+        {
+            _cam.cullingMask = (1 << _layerIndex);
+        }
+
+        public static int GetLayerMask(int layerIndex)
+        {
+            //// Bit shift the index of the layer (8) to get a bit mask
+            //int layerMask = 1 << 8;
+
+            //// This would cast rays only against colliders in layer 8.
+            //// But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+            //layerMask = ~layerMask;
+            var result = (1 << layerIndex);
+            return result;
+        }
+
+        public static int GetLayerMaskExcept(int layerIndex)
+        {
+            var result = (1 << layerIndex);
+            return ~result;
+        }
+
+        ///<summary>
+        ///[ROLE] : カメラのレイヤーを設定する
+        ///[note] : -
+        ///</summary>///
+        public static void SetCameraLayer(Camera _cam, string _layerName)
+        {
+            _cam.cullingMask = (1 << LayerMask.NameToLayer(_layerName));
+        }
+
+
+        ///<summary>
+        /// [ROLE] : ２次元クロス積を求める
+        /// [note] :
+        ///</summary>
+        public static float Cross(Vector2 _v1, Vector2 _v2)
+        {
+            return _v1.x * _v2.y - _v1.y * _v2.x;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 座標の高さを指定の座標の高さに合わせる
+        /// [note] : -
+        ///</summary>
+        public static Vector3 MakeSameAltitude(Vector3 _original, Vector3 _goal)
+        {
+            _original.y = _goal.y;
+            return _original;
+        }
+
+
+        ///<summary>
+        ///[ROLE] : ±ランダム値を返す
+        ///[note] : -
+        ///</summary>
+        public static float RandomRange(float _v)
+        {
+            return UnityEngine.Random.Range(-_v, _v);
+        }
+
+
+        ///<summary>
+        ///[ROLE] : ファイルまたはディレクトリが存在するか
+        ///[note] : -
+        ///</summary>
+        public static bool IsPathExists(string path)
+        {
+            var exist = System.IO.File.Exists(path);
+            if(!exist)
+            {
+                Debug.LogWarning("No path exists' " + path);
+            }
+
+            return exist;
+        }
+
+
+        ///<summary>
+        ///[ROLE] : vector3をvector2に （x,z）
+        ///[note] : 高度（y）は切り捨て
+        ///</summary>
+        public static Vector2 ConvertV3ToV2_IgnoreY(Vector3 _v)
+        {
+            return new Vector2(_v.x, _v.z);
+        }
+
+
+        ///<summary>
+        ///[ROLE] : Vector2をvector3
+        ///[note] : 高度を指定する
+        ///</summary>
+        public static Vector3 ConvertV2ToV3(Vector2 _v, float _y)
+        {
+            return new Vector3(_v.x, _y, _v.y);
+        }
+
+
+        ///<summary>
+        ///[ROLE] : Vector2をvector3
+        ///[note] : 高度を指定する
+        ///</summary>
+        public static Vector3[] AddV3(Vector3[] _v, Vector3 _addtional)
+        {
+            for(var i = 0; i < _v.Length; i++)
+            {
+                _v[i] += _addtional;
+            }
+
+            return _v;
+        }
+
+
+        ///<summary>
+        ///[ROLE] : 指定したインデックスから指定した数はなれたインデックスを返す
+        ///[note] : 長さの数倍離れると対応できない
+        ///</summary>
+        public static int NeighborIndex(int _arrayLength, int _tgtIndex, int _dist)
+        {
+            var result = _tgtIndex + _dist;
+            if(result < 0)
+            {
+                result = _arrayLength + result;
+            }
+            else if(result >= _arrayLength)
+            {
+                result = (result - _arrayLength);
+            }
+
+            return Mathf.Clamp(result, 0, _arrayLength - 1);
+        }
+
+
+        ///<summary>
+        ///[ROLE] : 要素を与えると一つのインデックスを返す
+        ///[note] : 要素の値が大きいほど選ばれる確率が高まる
+        ///</summary>///
+        public static int GetRandomIndex(float[] elements, int elementCount = -1)
+        {
+            if(elementCount < 0)
+            {
+                elementCount = elements.Length;
+            }
+
+            // Calculate the total weight
+            var totalWeight = 0f;
+            for(int i = 0; i < elementCount; i++)
+            {
+                totalWeight += elements[i];
+            }
+
+            // Generate a random value between 0 and the total weight
+            var randomValue = Random.value * totalWeight;
+
+            // Iterate through the elements to find the selected index
+            var cumulativeWeight = 0f;
+            for(var i = 0; i < elementCount; i++)
+            {
+                cumulativeWeight += elements[i];
+                if(randomValue <= cumulativeWeight)
                 {
                     return i;
                 }
             }
 
-            return weights.Count - 1;
+            // Fallback (should not be reached if weights are valid)
+            return -1;
         }
 
-        /// <summary>
-        /// 配列をシャッフルして指定要素数を取り出します (Fisher-Yates Shuffle)
-        /// </summary>
-        public static T[] ShuffleAndTake<T>(T[] array, int count)
+        ///<summary>
+        ///[ROLE] : 要素を与えると一つのインデックスを返す
+        ///[note] : 要素の値が大きいほど選ばれる確率が高まる
+        ///</summary>
+        public static int GetRandomIndex(List<float> elements)
         {
-            if(array == null) return new T[0];
-
-            // 配列の複製を作成（元の配列を壊さないため）
-            var temp = (T[])array.Clone();
-            var n = temp.Length;
-
-            // シャッフル
-            for(var i = 0; i < n - 1; i++)
+            var totalWeight = 0f;
+            for(int i = 0; i < elements.Count; i++)
             {
-                var r = Random.Range(i, n);
-                (temp[i], temp[r]) = (temp[r], temp[i]); // Swap
+                totalWeight += elements[i];
             }
 
-            // 指定数だけ切り出し
-            count = Mathf.Clamp(count, 0, n);
-            var result = new T[count];
-            Array.Copy(temp, result, count);
+            var randomValue = Random.value * totalWeight;
 
-            return result;
+            var cumulativeWeight = 0f;
+            for(var i = 0; i < elements.Count; i++)
+            {
+                cumulativeWeight += elements[i];
+                if(randomValue <= cumulativeWeight)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         /// <summary>
-        /// 円状に配置した座標配列を返します
+        /// [ROLE] : xz平面上の原点からrangeの半径の円周上のランダムな点を返す
         /// </summary>
-        public static Vector3[] GetCirclePositions(int count, float radius, Vector3 centerPos)
+        public static Vector3 GetRandomPointOnCircle(float range)
         {
-            var results = new Vector3[count];
-            var angleStep = (Mathf.PI * 2.0f) / count;
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            float x = Mathf.Cos(angle) * range;
+            float z = Mathf.Sin(angle) * range;
+            return new Vector3(x, 0f, z);
+        }
 
-            for(var i = 0; i < count; i++)
+        public static Vector3 GetRandomPointInsideCircle(float range)
+        {
+            var point = Random.insideUnitCircle * range;
+            return new Vector3(point.x, 0f, point.y);
+        }
+
+        ///<summary>
+        ///[ROLE] : 指定範囲以内の整数をランダムで返す
+        ///[note] : -
+        ///</summary>
+        public static int RandomInt(int _min, int _max)
+        {
+            return Mathf.FloorToInt(UnityEngine.Random.Range(_min, _max + 1));
+        }
+
+
+        ///<summary>
+        ///[ROLE] : 指定範囲以内の整数をランダムで返す
+        ///[note] : -
+        ///</summary>
+        public static int RandomInt(int _min, int _max, int _except)
+        {
+            var ints = new int[_max - _min];
+            var index = 0;
+            for(var i = _min; i <= _max; i++)
             {
-                var angle = i * angleStep;
-                var x = radius * Mathf.Cos(angle);
-                var z = radius * Mathf.Sin(angle);
-                results[i] = centerPos + new Vector3(x, 0f, z);
+                if(i == _except)
+                {
+                    continue;
+                }
+
+                ints[index] = i;
+                index++;
+            }
+
+            return ints[Mathf.FloorToInt(Random.value * ints.Length)];
+        }
+
+
+        ///<summary>
+        /// [ROLE] : 指定した文字を改行コードに差し替える
+        /// [note] : -
+        ///</summary>
+        public static string ReplaceWithNewLine(string _text, string _target)
+        {
+            return _text.Replace(_target, System.Environment.NewLine);
+        }
+
+
+        ///<summary>
+        ///[ROLE] : 配列をシャッフルして指定の要素数まで削る
+        ///[note] : -
+        ///</summary>///
+        public static T[] ShuffleArray<T>(T[] _array, int _count)
+        {
+            var ary2 = new T[_count];
+            _array = _array.OrderBy(i => System.Guid.NewGuid()).ToArray();
+            System.Array.Copy(_array, ary2, _count);
+            return ary2;
+        }
+
+
+        ///<summary>
+        ///[ROLE] : コンポネントを新しいGOにコピーする
+        ///[note] : http://answers.unity3d.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html, http://answers.unity3d.com/questions/458207/copy-a-component-at-runtime.html
+        ///</summary>
+        public static void CopyComponent(Component _original, GameObject _dest)
+        {
+            var compoType = _original.GetType();
+
+            var former = _dest.GetComponent(compoType);
+            if(former != null)
+            {
+                Component.Destroy(former);
+            }
+
+            var newCompo = _dest.AddComponent(compoType);
+
+            var flags = System.Reflection.BindingFlags.Public |
+                        System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.Default |
+                        System.Reflection.BindingFlags.DeclaredOnly;
+
+            var pinfos = compoType.GetProperties(flags);
+            foreach(var pinfo in pinfos)
+            {
+                if(pinfo.CanWrite)
+                {
+                    try
+                    {
+                        pinfo.SetValue(newCompo, pinfo.GetValue(_original, null), null);
+                    }
+                    catch { }
+                }
+            }
+
+            var fileds = compoType.GetFields();
+            foreach(var field in fileds)
+            {
+                field.SetValue(newCompo, field.GetValue(_original));
+            }
+        }
+
+
+        ///<summary>
+        ///[ROLE] : 円状に展開した場合の座標を返す
+        ///[note] : -
+        ///</summary>
+        public static Vector3[] CirclePosition(int _obejectCount, float _radius, Vector3 _cetnerPos)
+        {
+            var results = new Vector3[_obejectCount];
+
+            float para;
+            float posX;
+            float posZ;
+
+            for(var i = 0; i < _obejectCount; i++)
+            {
+                para = i * ((Mathf.PI * 2.0f) / _obejectCount);
+                posX = _radius * Mathf.Cos(para);
+                posZ = _radius * Mathf.Sin(para);
+
+                // Position
+                results[i] = new Vector3(posX, 0f, posZ) + _cetnerPos;
             }
 
             return results;
         }
 
-        #endregion
 
-        #region *** File I/O ***
-
-        /// <summary>
-        /// テキストファイルを読み込みます
-        /// </summary>
-        public static string ReadTextFile(string path)
+        ///<summary>
+        ///[ROLE] : 円状に展開した場合の座標を返す
+        ///[note] : 中心からの距離がランダム
+        ///</summary>
+        public static Vector3[] CirclePositionRandomRange(int _obejectCount, Vector2 _radiusRange, Vector3 _cetnerPos)
         {
-            if(!File.Exists(path))
+            var results = new Vector3[_obejectCount];
+
+            float para;
+            float posX;
+            float posZ;
+
+            for(var i = 0; i < _obejectCount; i++)
             {
-                Debug.LogWarning($"File not found: {path}");
-                return string.Empty;
+                var range = Random.Range(_radiusRange.x, _radiusRange.y);
+                para = i * ((Mathf.PI * 2.0f) / _obejectCount);
+                posX = range * Mathf.Cos(para);
+                posZ = range * Mathf.Sin(para);
+                results[i] = new Vector3(posX, 0f, posZ) + _cetnerPos;
             }
 
+            return results;
+        }
+
+
+        ///<summary>
+        /// [ROLE] : -
+        /// [note] : 順番は逆になることがある
+        ///</summary>
+        public static List<Vector2Int> CellLine(Vector2Int start, Vector2Int end, bool fixStart = false)
+        {
+            var result = new List<Vector2Int>();
+            var steep = Mathf.Abs(end.y - start.y) > Mathf.Abs(end.x - start.x);
+            var swaped = false;
+            if(steep)
+            {
+                var s = start.x;
+                start.x = start.y;
+                start.y = s;
+
+                s = end.x;
+                end.x = end.y;
+                end.y = s;
+            }
+
+            if(start.x > end.x)
+            {
+                swaped = true;
+
+                var s = start.x;
+                start.x = end.x;
+                end.x = s;
+
+                s = start.y;
+                start.y = end.y;
+                end.y = s;
+            }
+
+            var deltax = end.x - start.x;
+
+            var deltay = Mathf.Abs(end.y - start.y);
+            var error = Mathf.RoundToInt(deltax / 2f);
+            var ystep = 0;
+            var y = start.y;
+
+            if(start.y < end.y)
+            {
+                ystep = 1;
+            }
+            else
+            {
+                ystep = -1;
+            }
+
+            for(var x = start.x; x < end.x; x++)
+            {
+                if(steep)
+                {
+                    result.Add(new Vector2Int(y, x));
+                }
+                else
+                {
+                    result.Add(new Vector2Int(x, y));
+                }
+
+                error -= deltay;
+
+                if(error < 0)
+                {
+                    y += ystep;
+                    error += deltax;
+                }
+            }
+
+            if(fixStart == true && swaped == true)
+            {
+                result.Reverse();
+            }
+
+            return result;
+        }
+
+        static public string ReadTextFile(string _pathToTextFile)
+        {
+            var result = "";
             try
             {
-                return File.ReadAllText(path);
+                // Open the text file using a stream reader.
+                using(var sr = new StreamReader(_pathToTextFile))
+                {
+                    // Read the stream to a string, and write the string to the console.
+                    var line = sr.ReadToEnd();
+                    result = line;
+                }
             }
             catch(Exception e)
             {
-                Debug.LogError($"Failed to read file: {e.Message}");
-                return string.Empty;
+                Debug.LogWarning("The file could not be read:");
+                Debug.LogWarning(e.Message);
             }
+
+            return result;
         }
 
-        /// <summary>
-        /// テキストファイルを書き出します（追記モード）
-        /// </summary>
-        public static bool WriteTextFile(string dirPath, string fileName, string content,
-            StringDateType timeSuffixType = StringDateType.NoTime, string extension = ".txt")
-        {
-            var dateSuffix = "";
-            var now = DateTime.Now;
 
-            switch(timeSuffixType)
+        ///<summary>
+        ///[ROLE] : テキストファイルを書き出す
+        ///[note] : 同名ファイルには書き足す
+        ///</summary>
+        public static bool WriteTextFile(string _dirPath, string _fileName, string _content,
+            StringDateType _minTimeType, string _extension = ".txt")
+        {
+            _content += System.Environment.NewLine;
+
+
+            var fileNameDate = "";
+
+            switch(_minTimeType)
             {
+                case StringDateType.NoTime:
+                    break;
                 case StringDateType.DayLevel:
-                    dateSuffix = "_" + now.ToString("yyyy-MM-dd");
+                    fileNameDate = DateTime.Now.ToString("yyyy-MM-dd");
                     break;
                 case StringDateType.HourLevel:
-                    dateSuffix = "_" + now.ToString("yyyy-MM-dd-HH");
+                    fileNameDate = DateTime.Now.ToString("yyyy-MM-dd-HH");
                     break;
                 case StringDateType.MinuteLevel:
-                    dateSuffix = "_" + now.ToString("yyyy-MM-dd-HH-mm");
+                    fileNameDate = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
                     break;
                 case StringDateType.SecondLevel:
-                    dateSuffix = "_" + now.ToString("yyyy-MM-dd-HH-mm-ss");
+                    fileNameDate = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
+                    break;
+                default:
                     break;
             }
 
-            var fullPath = Path.Combine(dirPath, fileName + dateSuffix + extension);
+            if(fileNameDate != "")
+            {
+                _fileName += "_" + fileNameDate;
+            }
+
+            _fileName += _extension;
+
+            var path = System.IO.Path.Combine(_dirPath, _fileName);
+
+            StreamWriter sw;
+            var fi = new FileInfo(path);
+            sw = fi.AppendText();
 
             try
             {
-                // ディレクトリがなければ作成
-                if(!Directory.Exists(dirPath))
-                {
-                    Directory.CreateDirectory(dirPath);
-                }
-
-                File.AppendAllText(fullPath, content + Environment.NewLine);
-                return true;
+                sw.Write(_content);
             }
             catch(Exception ex)
             {
-                Debug.LogError($"Failed to write file: {ex.Message}");
+                Debug.Log("filed to output log " + ex.ToString());
+                //UtilityTeam.LogToDIWManager_General(UtilityTeam.LogKind.ErrorLog, "filed to output log " + ex.ToString());
                 return false;
+                //throw;
             }
+            finally
+            {
+                sw.Flush();
+                sw.Close();
+            }
+
+            return true;
+        }
+
+        public static Vector2 GetScreenPosition(Camera camera, Vector3 position, float width = 200f,
+            float height = 200f)
+        {
+            var viewPos = camera.WorldToViewportPoint(position);
+            var screenPos = new Vector2(
+                Mathf.Clamp(Screen.width * viewPos.x, 0f, Screen.width - width),
+                Mathf.Clamp(Screen.height * (1f - viewPos.y), 0f, Screen.height - height)
+            );
+            return screenPos;
         }
 
         #endregion
 
-
         #region *** Camera ***
-
-        public static Vector2 GetScreenPosition(Camera camera, Vector3 position, float clampWidth = 200f,
-            float clampHeight = 200f)
-        {
-            var viewPos = camera.WorldToViewportPoint(position);
-
-            // ビューポート外の処理（背面に回った場合など）が必要ならここに追加
-
-            return new Vector2(
-                Mathf.Clamp(Screen.width * viewPos.x, 0f, Screen.width - clampWidth),
-                Mathf.Clamp(Screen.height * (1f - viewPos.y), 0f, Screen.height - clampHeight)
-            );
-        }
 
         public static Vector3 GetCursorPositionOnPlane(Camera camera, float height = 0f)
         {
             var ray = camera.ScreenPointToRay(Input.mousePosition);
-            var plane = new Plane(Vector3.up, new Vector3(0, height, 0));
-
-            if(plane.Raycast(ray, out var distance))
-            {
-                return ray.GetPoint(distance);
-            }
-
-            return Vector3.zero;
+            return GetPositionRayHitPlane(Vector3.up * height, Vector3.up, camera.transform.position, ray.direction);
         }
 
         #endregion
