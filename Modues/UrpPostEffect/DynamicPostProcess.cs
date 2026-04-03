@@ -9,23 +9,23 @@ namespace NipaFriends.Modules.UrpPostProcess
     [RequireComponent(typeof(Camera))]
     public class DynamicPostProcess : MonoBehaviour
     {
-        [SerializeField] private Material material;
+        [SerializeField] protected Material material;
         private readonly MinimalPass _minimalPass = new();
-        private Camera _camera;
+        protected Camera _camera;
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             this._camera = this.GetComponent<Camera>();
             // カメラのレンダリング開始イベントに登録
             RenderPipelineManager.beginCameraRendering += this.OnBeginCamera;
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             RenderPipelineManager.beginCameraRendering -= this.OnBeginCamera;
         }
 
-        private void OnBeginCamera(ScriptableRenderContext context, Camera cam)
+        protected virtual void OnBeginCamera(ScriptableRenderContext context, Camera cam)
         {
             // アタッチされているカメラ以外には適用しない
             if(cam != this._camera || this.material == null)
