@@ -70,6 +70,23 @@ namespace NipaFriends
             return vectors.Sum() / count;
         }
 
+        /// <summary>
+        /// Spherical linear interpolation for Vector2 (angle interpolation).
+        /// </summary>
+        public static Vector2 Vector2Slerp(Vector2 from, Vector2 to, float t)
+        {
+            float angle = Vector2.SignedAngle(from, to);
+            float rad = angle * Mathf.Deg2Rad * t;
+            float sin = Mathf.Sin(rad);
+            float cos = Mathf.Cos(rad);
+
+            Vector2 dir = new Vector2(
+                from.x * cos - from.y * sin,
+                from.x * sin + from.y * cos
+            );
+            return dir.normalized * Mathf.Lerp(from.magnitude, to.magnitude, t);
+        }
+
 
         ///<summary>
         ///[ROLE] : Vector2をvector3
