@@ -10,12 +10,12 @@ namespace NipaFriends
         ///[ROLE] : vector3をvector2に （x,z）
         ///[note] : 高度（y）は切り捨て
         ///</summary>
-        public static Vector2 ToV2_XZ(this Vector3 _v)
+        public static Vector2 ToV2xz(this Vector3 _v)
         {
             return new Vector2(_v.x, _v.z);
         }
 
-        public static Vector2 ToV2_XY(this Vector3 _v)
+        public static Vector2 ToV2xy(this Vector3 _v)
         {
             return new Vector2(_v.x, _v.y);
         }
@@ -39,12 +39,12 @@ namespace NipaFriends
         ///[ROLE] : Vector2をvector3
         ///[note] : 高度を指定する
         ///</summary>
-        public static Vector3 ToV3_Y(this Vector2 _v, float _y)
+        public static Vector3 ToV3y(this Vector2 _v, float _y)
         {
             return new Vector3(_v.x, _y, _v.y);
         }
 
-        public static Vector3 ToV3_Z(this Vector2 _v, float z)
+        public static Vector3 ToV3z(this Vector2 _v, float z)
         {
             return new Vector3(_v.x, _v.y, z);
         }
@@ -135,6 +135,18 @@ namespace NipaFriends
             _cild.localPosition = Vector3.zero;
             _cild.localScale = Vector3.one * _scale;
             _cild.localRotation = Quaternion.identity;
+        }
+
+
+        public static Vector2 ToV2(this  Quaternion2d  q)
+        {
+            return new Vector2(q.cos, q.sin);
+        }
+
+        public static Quaternion2d ToQuaternion2d(this Vector2 v)
+        {
+            v = v.normalized;
+            return new Quaternion2d(v.x, v.y);
         }
     }
 

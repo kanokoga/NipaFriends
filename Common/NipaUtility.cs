@@ -452,8 +452,8 @@ namespace NipaFriends
         {
             var result2 = Vector2.zero;
             float ratio;
-            var found = GetCrossPoint(a1.ToV2_XZ(), a2.ToV2_XZ(), b1.ToV2_XZ(), b2.ToV2_XZ(), out result2, out ratio);
-            result = result2.ToV3_Y(Mathf.Lerp(a1.y, a2.y, ratio));
+            var found = GetCrossPoint(a1.ToV2xz(), a2.ToV2xz(), b1.ToV2xz(), b2.ToV2xz(), out result2, out ratio);
+            result = result2.ToV3y(Mathf.Lerp(a1.y, a2.y, ratio));
             return found;
         }
 
@@ -809,7 +809,7 @@ namespace NipaFriends
         }
 
         public static bool IsLineCross(Vector3 _lineAStart, Vector3 _lineAEnd, Vector3 _lineBStart, Vector3 _lineBEnd)
-            => IsLineCross(_lineAStart.ToV2_XZ(), _lineAEnd.ToV2_XZ(), _lineBStart.ToV2_XZ(), _lineBEnd.ToV2_XZ());
+            => IsLineCross(_lineAStart.ToV2xz(), _lineAEnd.ToV2xz(), _lineBStart.ToV2xz(), _lineBEnd.ToV2xz());
 
 
         ///<summary>
@@ -1419,5 +1419,132 @@ namespace NipaFriends
         HourLevel,
         MinuteLevel,
         SecondLevel
+    }
+
+    [Serializable]
+    public struct Quaternion2d
+    {
+        // 内部的には複素数 a + bi として保持 (a = cos(θ/2) ではない点に注意、2Dなら直球でOK)
+        // ここでは計算の簡略化のため、回転角 θ に対して (cosθ, sinθ) を保持します
+        public float cos;
+        public float sin;
+
+        // 基本的なプロパティ
+        public static Quaternion2d identity => new Quaternion2d(1, 0);
+
+        public Quaternion2d(float cos, float sin)
+        {
+            this.cos = cos;
+            this.sin = sin;
+        }
+
+        /// <summary>
+        /// 度数法から回転を作成
+        /// </summary>
+        public static Quaternion2d Euler(float degrees)
+        {
+            float rad = degrees * Mathf.Deg2Rad;
+            return new Quaternion2d(Mathf.Cos(rad), Mathf.Sin(rad));
+        }
+
+        /// <summary>
+        /// ラジアンから回転を作成
+        /// </summary>
+        public static Quaternion2d FromRadians(float radians)
+        {
+            return new Quaternion2d(Mathf.Cos(radians), Mathf.Sin(radians));
+        }
+
+        /// <summary>
+        /// 現在の回転角（度数）を取得
+        /// </summary>
+        public float eulerAngles => Mathf.Atan2(sin, cos) * Mathf.Rad2Deg;
+
+        // --- 演算子オーバーロード ---
+
+        /// <summary>
+        /// 回転の合成 (q1 * q2)
+        /// </summary>
+        public static Quaternion2d operator *(Quaternion2d lhs, Quaternion2d rhs)
+        {
+            // 複素数の掛け算: (a+bi)(c+di) = (ac-bd) + (ad+bc)i
+            return new Quaternion2d(
+                lhs.cos * rhs.cos - lhs.sin * rhs.sin,
+                lhs.cos * rhs.sin + lhs.sin * rhs.cos
+            );
+        }
+
+        /// <summary>
+        /// Vector2 を回転させる (Quaternion2d * Vector2)
+        /// </summary>
+        public static Vector2 operator *(Quaternion2d q, Vector2 v)
+        {
+            // 回転行列の適用と同じ:
+            // x' = x*cosθ - y*sinθ
+            // y' = x*sinθ + y*cosθ
+            return new Vector2(
+                v.x * q.cos - v.y * q.sin,
+                v.x * q.sin + v.y * q.cos
+            );
+        }
+
+        public static Vector3 operator *(Quaternion2d q, Vector3 v)
+        {
+            // xz平面で回転させる場合:
+            return new Vector3(
+                v.x * q.cos - v.z * q.sin,
+                v.y, // yはそのまま
+                v.x * q.sin + v.z * q.cos
+            );
+        }
+
+        /// <summary>
+        /// 逆回転の取得
+        /// </summary>
+        public static Quaternion2d Inverse(Quaternion2d q)
+        {
+            return new Quaternion2d(q.cos, -q.sin);
+        }
+
+        /// <summary>
+        /// 線形補間
+        /// </summary>
+        public static Quaternion2d Lerp(Quaternion2d a, Quaternion2d b, float t)
+        {
+            float angleA = Mathf.Atan2(a.sin, a.cos);
+            float angleB = Mathf.Atan2(b.sin, b.cos);
+            float lerpedAngle = Mathf.LerpAngle(angleA * Mathf.Rad2Deg, angleB * Mathf.Rad2Deg, t);
+            return Euler(lerpedAngle);
+        }
+
+        /// <summary>
+        /// 指定した方向ベクトルを「右(X軸正)」あるいは「上(Y軸正)」に向ける回転を作成します。
+        /// デフォルトではVector2.right (1, 0) を基準とします。
+        /// </summary>
+        public static Quaternion2d LookRotation(Vector2 direction)
+        {
+            return new Quaternion2d(direction.x, direction.y);
+        }
+
+        /// <summary>
+        /// fromベクトルをtoベクトルへ回転させるための差分回転を作成します。
+        /// </summary>
+        public static Quaternion2d FromToRotation(Vector2 from, Vector2 to)
+        {
+            if(from.sqrMagnitude < Mathf.Epsilon || to.sqrMagnitude < Mathf.Epsilon)
+                return identity;
+
+            from.Normalize();
+            to.Normalize();
+
+            // 複素数の除算（to / from）と同じ計算：
+            // (x2 + y2i) / (x1 + y1i) = (x1*x2 + y1*y2) + (x1*y2 - y1*x2)i
+            return new Quaternion2d(
+                from.x * to.x + from.y * to.y, // 内積 (Dot)
+                from.x * to.y - from.y * to.x // 外積のZ成分相当 (Cross)
+            );
+        }
+
+        public override string ToString() => $"Quaternion2d(deg: {eulerAngles:F2})";
     }
 }
