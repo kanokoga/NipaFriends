@@ -1518,6 +1518,17 @@ namespace NipaFriends
         }
 
         /// <summary>
+        /// from から to に最大 maxDegreesDelta 度だけ回転させた結果を返します。
+        /// </summary>
+        public static Quaternion2d RotateTowards(Quaternion2d from, Quaternion2d to, float maxDegreesDelta)
+        {
+            var fromDeg = from.eulerAngles;
+            var toDeg = to.eulerAngles;
+            var nextDeg = Mathf.MoveTowardsAngle(fromDeg, toDeg, maxDegreesDelta);
+            return Euler(nextDeg);
+        }
+
+        /// <summary>
         /// 指定した方向ベクトルを「右(X軸正)」あるいは「上(Y軸正)」に向ける回転を作成します。
         /// デフォルトではVector2.right (1, 0) を基準とします。
         /// </summary>
